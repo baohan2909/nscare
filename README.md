@@ -29,7 +29,7 @@ ns-care/
 ## Thứ tự triển khai
 
 ### 1. Database (Supabase) — làm 1 lần
-- Mở **SQL Editor**, dán & chạy file `care_foundation_v1.3.sql` (giao riêng).
+- Mở **SQL Editor**, dán & chạy file `care_foundation_v1.4.sql` (giao riêng).
 - Vào **Project Settings ▸ API ▸ Exposed schemas**, thêm `care` vào danh sách.
 
 ### 2. Đồng bộ danh mục + tài khoản (Google Apps Script) — làm 1 lần / định kỳ
@@ -74,6 +74,10 @@ Chạy thử tại chỗ: `npm run dev`.
 - `config.js` chứa **anon key** (khóa công khai an toàn — DB đã khóa RLS,
   app chỉ chạm được qua `fn_*`). **KHÔNG** đưa service_role key vào repo này;
   key đó chỉ dùng trong GAS.
-- Yêu cầu SQL **v1.3** trở lên (fn_hangdoi có cột kênh + fn_sync_tin_hieu_do).
+- Yêu cầu SQL **v1.4** trở lên (fn_hangdoi có cột kênh + fn_sync_tin_hieu_do).
 - Cảnh báo **Telegram** khi có tín hiệu đỏ: điền `CFG.TELEGRAM` trong GAS và đặt
   trigger theo giờ chạy `quetTinHieuDo` (xem file tổng hợp bàn giao).
+
+## ⚠️ Đường dẫn GitHub Pages
+Repo deploy ở `baohan2909.github.io/nscare/` nên `vite.config.js` đặt `base: '/nscare/'`.
+Nếu đổi TÊN REPO, phải sửa `base` thành `/<tên-repo>/` rồi build lại, nếu không sẽ TRẮNG MÀN (asset 404).
