@@ -399,3 +399,47 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 
 /* Nút gọi tổng đài */
 .goi-td{border:0;cursor:pointer;font-weight:800;font-size:12px;letter-spacing:.3px;font-family:inherit}
+
+/* ===== MARKETING 360 ===== */
+.mkt-tongso{font-weight:800;color:var(--teal-deep);font-size:13.5px}
+.mkt-kenh{display:grid;gap:12px}
+.mkt-kenh .k{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.mkt-kenh .k b{margin-right:8px}
+.mkt-kenh .k p{margin:6px 0 0;font-size:12.5px;color:var(--ink-soft);line-height:1.55}
+.mkt-goiy{display:grid;gap:10px}
+.mkt-goiy .r{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.55;color:var(--ink)}
+.mkt-goiy .n{flex:0 0 22px;height:22px;border-radius:50%;background:var(--grad);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;margin-top:1px}
+.phan-trang{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px;font-size:13px;color:var(--ink-soft)}
+
+/* Mẫu tin */
+.mkt-mau-luoi{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.mkt-mau-card{cursor:pointer;transition:.15s}
+.mkt-mau-card:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(20,33,58,.14)}
+.mkt-mau-card .dau{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mkt-mau-card .loai{font-size:11.5px;color:var(--teal-deep);font-weight:700;margin:4px 0 8px}
+.mkt-mau-card img{width:100%;height:120px;object-fit:cover;border-radius:10px;margin-bottom:8px}
+.mkt-mau-card .nd{font-size:12.5px;color:var(--ink-soft);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.mkt-soan{display:grid;grid-template-columns:1fr 300px;gap:18px}
+@media(max-width:760px){.mkt-soan{grid-template-columns:1fr}}
+.mkt-soan .nd-o{margin-top:10px}
+.mkt-soan .nd-o:first-child{margin-top:0}
+.mkt-soan select,.mkt-soan input{width:100%}
+
+/* Preview Zalo */
+.zalo-preview{background:#E8EAED;border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+.zp-dau{background:#0068FF;color:#fff;padding:10px 14px;font-weight:800;font-size:13.5px}
+.zp-dau span{font-weight:500;font-size:10.5px;opacity:.85;display:block}
+.zp-body{padding:12px}
+.zp-body img{width:100%;border-radius:12px 12px 4px 4px;display:block}
+.zp-anh-trong{height:110px;border-radius:12px 12px 4px 4px;background:#fff;display:grid;place-items:center;color:#9AA3B2;font-size:12px}
+.zp-bong{background:#fff;border-radius:4px 4px 12px 12px;padding:10px 12px;font-size:12.5px;line-height:1.5}
+.zp-bong b{display:block;margin-bottom:4px}
+.zp-bong p{margin:0;white-space:pre-wrap}
+.zp-chu{text-align:center;font-size:10.5px;color:#9AA3B2;padding:0 0 10px}
+
+/* Chiến dịch */
+.cd-bar{width:90px;height:7px;border-radius:6px;background:#E9E6DE;display:inline-block;vertical-align:middle;overflow:hidden}
+.cd-bar .f{height:100%;background:var(--grad);border-radius:6px}
+.cd-pct{font-size:11.5px;font-weight:800;color:var(--teal-deep);margin-left:7px}
+.mkt-hang2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.mkt-dem{margin-top:14px;background:rgba(63,182,168,.08);border:1px solid rgba(63,182,168,.3);border-radius:11px;padding:11px 13px;font-size:12.5px;line-height:1.55;color:var(--ink)}

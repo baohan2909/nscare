@@ -22,3 +22,17 @@ export const IcStar  = (p) => <svg viewBox="0 0 24 24" width={p.size||16} height
 export const IcClock = (p) => <S {...p}><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></S>
 export const IcRefresh=(p) => <S {...p}><path d="M21 12a9 9 0 11-4.5-7.8L21 3v6h-6"/></S>
 export const IcOut   = (p) => <S {...p}><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></S>
+
+export const IcMega = ({ size = 18, ...p }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M3 11v3a1 1 0 0 0 1 1h2l3.5 4.5a1 1 0 0 0 1.8-.6V5.1a1 1 0 0 0-1.8-.6L6 9H4a1 1 0 0 0-1 1z"/>
+    <path d="M15 8.5a5 5 0 0 1 0 7"/><path d="M18 6a9 9 0 0 1 0 12"/>
+  </svg>
+)
+export const IcSend = ({ size = 18, ...p }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>
+  </svg>
+)

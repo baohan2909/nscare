@@ -1,12 +1,19 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { IcDash, IcPhone, IcUser, IcChart, IcForm, IcGear, IcChevL, IcOut, IcDown } from './Icons'
+import { IcDash, IcPhone, IcUser, IcChart, IcForm, IcGear, IcChevL, IcOut, IcDown, IcMega, IcSend } from './Icons'
 
 const NHOM = [
   { g: 'Chăm sóc', items: [
     { id: 'tq', nhan: 'Tổng quan', Ic: IcDash },
     { id: 'hd', nhan: 'Hàng đợi chăm sóc', Ic: IcPhone, badgeKey: 'hangDoi' },
     { id: 'kh', nhan: 'Khách hàng 360°', Ic: IcUser }
+  ]},
+  { g: 'Marketing', items: [
+    { id: 'mtq', nhan: 'Marketing 360', Ic: IcMega, min: 'quan_ly' },
+    { id: 'mcd', nhan: 'Chiến dịch', Ic: IcSend, min: 'quan_ly' },
+    { id: 'mkh', nhan: 'Kho khách hàng', Ic: IcUser, min: 'quan_ly' },
+    { id: 'mmau', nhan: 'Mẫu tin Zalo', Ic: IcForm, min: 'quan_ly' },
+    { id: 'mph', nhan: 'Phản hồi Zalo', Ic: IcPhone, min: 'quan_ly', badgeKey: 'mktPh' }
   ]},
   { g: 'Phân tích', items: [
     { id: 'pt', nhan: 'Phân tích ý kiến', Ic: IcChart, min: 'quan_ly' }

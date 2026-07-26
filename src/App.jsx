@@ -12,6 +12,11 @@ import PhanTich from './screens/PhanTich'
 import BoCauHoi from './screens/BoCauHoi'
 import QuanTri from './screens/QuanTri'
 import NhapDon from './screens/NhapDon'
+import MktTongQuan from './screens/MktTongQuan'
+import MktKhach from './screens/MktKhach'
+import MktChienDich from './screens/MktChienDich'
+import MktMau from './screens/MktMau'
+import MktPhanHoi from './screens/MktPhanHoi'
 
 const NGAY = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })
 const META = {
@@ -21,7 +26,12 @@ const META = {
   kh: ['Khách hàng 360°', 'Toàn bộ lịch sử mua & chăm sóc'],
   pt: ['Phân tích ý kiến', 'Tổng hợp ý kiến khách theo dòng sản phẩm'],
   bo: ['Bộ câu hỏi', 'Quản lý bộ câu hỏi có phiên bản'],
-  admin: ['Quản trị', 'Cấu hình, tuân thủ & nhật ký hệ thống']
+  admin: ['Quản trị', 'Cấu hình, tuân thủ & nhật ký hệ thống'],
+  mtq: ['Marketing 360', 'Toàn cảnh tiếp thị Zalo OA · ' + NGAY],
+  mcd: ['Chiến dịch Marketing', 'Tạo, chạy và đo lường chiến dịch Zalo'],
+  mkh: ['Kho khách hàng', 'Dữ liệu khách đã làm sạch, sẵn sàng tiếp cận'],
+  mmau: ['Mẫu tin Zalo', 'Soạn nội dung — xem trước như trên Zalo'],
+  mph: ['Phản hồi Zalo', 'Quan tâm mới & tin nhắn khách gửi OA']
 }
 
 export default function App() {
@@ -57,6 +67,11 @@ export default function App() {
         {man === 'pt' && <PhanTich />}
         {man === 'bo' && <BoCauHoi />}
         {man === 'admin' && <QuanTri />}
+        {man === 'mtq' && <MktTongQuan moMan={setMan} />}
+        {man === 'mcd' && <MktChienDich />}
+        {man === 'mkh' && <MktKhach />}
+        {man === 'mmau' && <MktMau />}
+        {man === 'mph' && <MktPhanHoi />}
       </div>
       {nhapDon && <NhapDon onClose={() => setNhapDon(false)} onXong={() => setReload(r => r + 1)} />}
     </div>

@@ -93,6 +93,22 @@ export const api = {
     rpc('fn_bo_sung_sdt', { p_phieu_id: phieu_id, p_sdt: sdt, p_ten: ten || null }),
   cuocGoiKh: (phieu_id) => rpc('fn_cuoc_goi_kh', { p_phieu_id: phieu_id }),
   xuatCrm: (tu, den) => rpc('fn_xuat_crm', { p_tu: tu || null, p_den: den || null }),
+
+  // --- MARKETING 360 ---
+  mktTongQuan: () => rpc('fn_mkt_tong_quan', {}),
+  mktKhachDs: (tim, follow, tinh, trang = 0, so = 50) =>
+    rpc('fn_mkt_khach_ds', { p_tim: tim || null, p_follow: follow || null,
+      p_tinh: tinh || null, p_trang: trang, p_so: so }),
+  mktDemPhanKhuc: (follow, tinh, nhan) =>
+    rpc('fn_mkt_dem_phan_khuc', { p_follow: follow || 'tat_ca', p_tinh: tinh || null, p_nhan: nhan || null }),
+  mktMauDs: () => rpc('fn_mkt_mau_ds', {}),
+  mktMauLuu: (p) => rpc('fn_mkt_mau_luu', { p }),
+  mktCdDs: () => rpc('fn_mkt_cd_ds', {}),
+  mktCdTao: (p) => rpc('fn_mkt_cd_tao', { p }),
+  mktCdTrangThai: (id, tt) => rpc('fn_mkt_cd_trang_thai', { p_id: id, p_tt: tt }),
+  mktCdChiTiet: (id) => rpc('fn_mkt_cd_chi_tiet', { p_id: id }),
+  mktPhanHoi: (gh = 100) => rpc('fn_mkt_phan_hoi', { p_gh: gh }),
+  mktPhanHoiXong: (id) => rpc('fn_mkt_phan_hoi_xong', { p_id: id }),
   async goiTongDai(sdt) {
     const { WEBHOOK_APP_URL, CALL_TOKEN } = await import('./config')
     if (!WEBHOOK_APP_URL) throw new Error('Chưa cấu hình tổng đài (WEBHOOK_APP_URL)')
