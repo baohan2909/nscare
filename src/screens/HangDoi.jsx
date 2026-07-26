@@ -8,7 +8,8 @@ const TABS = [
   { id: 'all', nhan: 'Tất cả' },
   { id: 'qua', nhan: 'Quá hạn' },
   { id: 'cho', nhan: 'Chờ gọi' },
-  { id: 'hen', nhan: 'Hẹn lại' }
+  { id: 'hen', nhan: 'Hẹn lại' },
+  { id: 'chosdt', nhan: 'Chờ SĐT' }
 ]
 
 export default function HangDoi({ moPhieu, tabDau }) {
@@ -30,7 +31,8 @@ export default function HangDoi({ moPhieu, tabDau }) {
     all: rows.length,
     qua: rows.filter(r => r.qua_han).length,
     cho: rows.filter(r => r.trang_thai === 'cho_lien_he').length,
-    hen: rows.filter(r => r.trang_thai === 'hen_goi_lai').length
+    hen: rows.filter(r => r.trang_thai === 'hen_goi_lai').length,
+    chosdt: rows.filter(r => r.trang_thai === 'cho_bo_sung_sdt').length
   }), [rows])
 
   const hien = useMemo(() => {
@@ -38,6 +40,7 @@ export default function HangDoi({ moPhieu, tabDau }) {
     if (tab === 'qua') r = r.filter(x => x.qua_han)
     else if (tab === 'cho') r = r.filter(x => x.trang_thai === 'cho_lien_he')
     else if (tab === 'hen') r = r.filter(x => x.trang_thai === 'hen_goi_lai')
+    else if (tab === 'chosdt') r = r.filter(x => x.trang_thai === 'cho_bo_sung_sdt')
     if (kenh) r = r.filter(x => x.kenh === kenh)
     if (q.trim()) {
       const s = q.trim().toLowerCase()
@@ -110,7 +113,9 @@ export default function HangDoi({ moPhieu, tabDau }) {
                 <tr key={r.phieu_id} onClick={() => moPhieu(r.phieu_id)}>
                   <td className="stt">{i + 1}</td>
                   <td className="l"><div className="kh-nm">{r.ten_kh || '(chưa có tên)'}</div>
-                    <div className="kh-sdt">{fmtSdt(r.sdt)}</div></td>
+                    <div className="kh-sdt">{String(r.sdt || '').startsWith('CHO:')
+                      ? <i style={{ color: 'var(--magenta)', fontStyle: 'normal', fontWeight: 700 }}>chưa có SĐT</i>
+                      : fmtSdt(r.sdt)}</div></td>
                   <td className="l"><span className="sp-nm"><IcBox size={15} />
                     {r.ten_sp_dau || '—'}{r.so_sp > 1 ? ` · +${r.so_sp - 1}` : ''}</span></td>
                   <td>{r.kenh ? <span className="kbadge">{r.kenh}</span> : '—'}</td>
@@ -118,8 +123,11 @@ export default function HangDoi({ moPhieu, tabDau }) {
                   <td className="num">{ngayVN(r.han_lien_he)}</td>
                   <td className="num">{r.so_lan || 0}</td>
                   <td>{r.uu_tien > 0 ? <span className="uu-star"><IcStar size={16} /></span> : '—'}</td>
-                  <td><a className="act-btn" href={'tel:' + (r.sdt || '')}
-                        onClick={e => e.stopPropagation()}><IcPhone size={13} />Gọi</a></td>
+                  <td>{String(r.sdt || '').startsWith('CHO:')
+                    ? <span className="act-btn" style={{ background: 'linear-gradient(135deg,#8E0047,#D6006C)' }}
+                        onClick={e => { e.stopPropagation(); moPhieu(r.phieu_id) }}>+ SĐT</span>
+                    : <a className="act-btn" href={'tel:' + (r.sdt || '')}
+                        onClick={e => e.stopPropagation()}><IcPhone size={13} />Gọi</a>}</td>
                 </tr>
               )
             })}

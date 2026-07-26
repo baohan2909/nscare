@@ -9,3 +9,11 @@ export const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY'
 
 // Schema đã tạo trong gói SQL nền móng. Đừng đổi.
 export const DB_SCHEMA = 'care'
+
+// ============================================================
+//  GỌI QUA TỔNG ĐÀI (tuỳ chọn — để '' nếu chỉ gọi tel: bằng SIM)
+//  Điền URL Web App của NS_CARE_webhook.gs (Deploy ▸ Web app ▸ /exec)
+//  + CALL_TOKEN đã đặt trong Script Properties của webhook đó.
+// ============================================================
+export const WEBHOOK_APP_URL = ''
+export const CALL_TOKEN = ''

@@ -86,5 +86,20 @@ export const api = {
   configDat: (khoa, gt) => rpc('fn_config_dat', { p_khoa: khoa, p_gia_tri: gt }),
   khongGoiDs: () => rpc('fn_khong_goi_ds', {}),
   anDanhKhach: (sdt) => rpc('fn_an_danh_khach', { p_sdt: sdt }),
-  nhatKy: (gh = 100) => rpc('fn_nhat_ky', { p_gioi_han: gh })
+  nhatKy: (gh = 100) => rpc('fn_nhat_ky', { p_gioi_han: gh }),
+
+  // --- v1.5: bổ sung SĐT + cuộc gọi/ghi âm + click-to-call ---
+  boSungSdt: (phieu_id, sdt, ten) =>
+    rpc('fn_bo_sung_sdt', { p_phieu_id: phieu_id, p_sdt: sdt, p_ten: ten || null }),
+  cuocGoiKh: (phieu_id) => rpc('fn_cuoc_goi_kh', { p_phieu_id: phieu_id }),
+  async goiTongDai(sdt) {
+    const { WEBHOOK_APP_URL, CALL_TOKEN } = await import('./config')
+    if (!WEBHOOK_APP_URL) throw new Error('Chưa cấu hình tổng đài (WEBHOOK_APP_URL)')
+    const u = WEBHOOK_APP_URL + '?src=click2call&token=' + encodeURIComponent(CALL_TOKEN) +
+              '&sdt=' + encodeURIComponent(sdt)
+    const res = await fetch(u, { method: 'GET' })
+    const j = await res.json().catch(() => ({}))
+    if (!j.ok) throw new Error(j.loi || 'Tổng đài không nhận lệnh gọi')
+    return j
+  }
 }

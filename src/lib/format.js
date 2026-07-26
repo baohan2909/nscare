@@ -35,6 +35,7 @@ export function fmtSdt(s) {
 
 // Nhãn + màu trạng thái phiếu
 export const TT = {
+  cho_bo_sung_sdt:     { nhan: 'Chờ bổ sung SĐT',    cls: 'klh'  },
   cho_lien_he:         { nhan: 'Chờ liên hệ',        cls: 'cho'  },
   dang_lien_he:        { nhan: 'Đang liên hệ',       cls: 'dang' },
   hen_goi_lai:         { nhan: 'Hẹn gọi lại',        cls: 'hen'  },

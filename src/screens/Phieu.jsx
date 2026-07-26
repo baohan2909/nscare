@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
+import { WEBHOOK_APP_URL } from '../lib/config'
 import { Spinner, Toast, LopPhu } from '../components/ui'
 import { IcChevL, IcCheck, IcStar, IcPhone, IcPlus } from '../components/Icons'
 import { ttPhieu, ngayVN, gioVN, fmtSdt, KETQUA, NHOM_YK, SAC_THAI } from '../lib/format'
@@ -14,6 +15,9 @@ export default function Phieu({ phieuId, quayLai }) {
   const [henMo, setHenMo] = useState(false)
   const [luu, setLuu] = useState(false)
   const [toast, setToast] = useState(null)
+  const [cuocGoi, setCuocGoi] = useState([])
+  const [sdtMoi, setSdtMoi] = useState('')
+  const [tenMoi, setTenMoi] = useState('')
 
   useEffect(() => { taiPhieu() }, [phieuId])
   async function taiPhieu() {
@@ -27,7 +31,23 @@ export default function Phieu({ phieuId, quayLai }) {
       const init = {}
       ;(j.tra_loi || []).forEach(t => { init[t.cau_hoi_id] = { diem: t.diem, gia_tri: t.gia_tri, tu_luan: t.tu_luan } })
       setTraLoi(init)
+      api.cuocGoiKh(phieuId).then(r => setCuocGoi(r || [])).catch(() => {})
     } catch (e) { setToast({ msg: e.message, kind: 'err' }) } finally { setTai(false) }
+  }
+
+  /* ---- v1.5: bổ sung SĐT cho phiếu chờ + gọi tổng đài ---- */
+  async function kichHoatSdt() {
+    if (!sdtMoi.trim()) return
+    try {
+      const j = await api.boSungSdt(phieuId, sdtMoi.trim(), tenMoi.trim() || null)
+      if (j?.ok === false) setToast({ msg: j.canh_bao || 'Số bị chặn', kind: 'err' })
+      else setToast({ msg: 'Đã kích hoạt phiếu — vào hàng đợi gọi' })
+      taiPhieu()
+    } catch (e) { setToast({ msg: e.message, kind: 'err' }) }
+  }
+  async function goiQuaTongDai(sdt) {
+    try { await api.goiTongDai(sdt); setToast({ msg: 'Tổng đài đang đổ chuông máy nhánh…' }) }
+    catch (e) { setToast({ msg: e.message, kind: 'err' }) }
   }
 
   const cauHoi = d?.cau_hoi || []
@@ -174,9 +194,26 @@ export default function Phieu({ phieuId, quayLai }) {
               <div className="av">{(k.ten || 'K').slice(0, 1).toUpperCase()}</div>
               <div><div className="nm">{k.ten || '(chưa có tên)'}</div>
                 <div className="sdt">{fmtSdt(k.sdt)}</div></div>
-              <a className="goi-that" href={'tel:' + (k.sdt || '')} title="Gọi ngay">
-                <IcPhone size={17} /></a>
+              <span style={{ display: 'flex', gap: 8 }}>
+                {WEBHOOK_APP_URL && !String(k.sdt || '').startsWith('CHO:') &&
+                  <button className="goi-that goi-td" title="Gọi qua tổng đài (có ghi âm)"
+                    onClick={() => goiQuaTongDai(k.sdt)}>TĐ</button>}
+                <a className="goi-that" href={'tel:' + (k.sdt || '')} title="Gọi bằng SIM">
+                  <IcPhone size={17} /></a>
+              </span>
             </div>
+            {p.trang_thai === 'cho_bo_sung_sdt' && (
+              <div className="sdt-bosung">
+                <div className="t">Đơn từ sàn chưa có số điện thoại. Mở đơn trên
+                  TikTok/Nhanh, bấm biểu tượng 👁 để xem số rồi dán vào đây:</div>
+                <input value={sdtMoi} onChange={e => setSdtMoi(e.target.value)}
+                  placeholder="Số điện thoại khách (09xx…)" inputMode="tel" />
+                <input value={tenMoi} onChange={e => setTenMoi(e.target.value)}
+                  placeholder="Tên khách (nếu có)" />
+                <button className="btn-ai" style={{ width: '100%' }} onClick={kichHoatSdt}
+                  disabled={!sdtMoi.trim()}>Kích hoạt phiếu chăm sóc</button>
+              </div>
+            )}
             <div className="kh-meta">
               <div className="r"><span className="k">Ngày nhận</span><span className="v">{ngayVN(don.ngay_nhan)}</span></div>
               <div className="r"><span className="k">Hạn gọi</span><span className="v">{ngayVN(p.han_lien_he)}</span></div>
@@ -199,6 +236,24 @@ export default function Phieu({ phieuId, quayLai }) {
               <button className="btn-mini warn" onClick={() => ghiLienHe('tu_choi')}>Khách từ chối</button>
             </div>
           </div>
+
+          {cuocGoi.length > 0 && (
+            <div className="side-card">
+              <div className="sec-tit" style={{ marginBottom: 10 }}>Cuộc gọi &amp; ghi âm
+                <span className="n">{cuocGoi.length}</span></div>
+              {cuocGoi.map(c => (
+                <div className="cg-item" key={c.id}>
+                  <div className="cg-dong">
+                    <span className={'cg-kq ' + (c.ket_qua === 'nghe_may' ? 'ok' : 'no')}>
+                      {c.ket_qua === 'nghe_may' ? 'Nghe máy' : c.ket_qua === 'khong_nghe' ? 'Không nghe' : (c.ket_qua || '—')}
+                    </span>
+                    <span className="cg-tg">{gioVN(c.bat_dau)}{c.thoi_luong ? ' · ' + Math.floor(c.thoi_luong / 60) + 'p' + (c.thoi_luong % 60) + 's' : ''}</span>
+                  </div>
+                  {c.ghi_am_url && <audio controls preload="none" src={c.ghi_am_url} className="cg-audio" />}
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="side-card">
             <div className="sec-tit" style={{ marginBottom: 12 }}>Lịch sử liên hệ
