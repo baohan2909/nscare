@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import { Card, SecTit, Spinner, Empty, Tt, Toast, LopPhu } from '../components/ui'
 import { IcCheck } from '../components/Icons'
-import { gioVN, fmtSdt, ngayVN } from '../lib/format'
+import { gioVN, fmtSdt, ngayVN, TT, KETQUA } from '../lib/format'
 
 const NHAN_CFG = {
   han_goi_ngay: { nhan: 'Hạn gọi sau nhận hàng', dv: 'ngày' },
@@ -19,6 +19,7 @@ export default function QuanTri() {
   const [sua, setSua] = useState({})          // { khoa: giá trị đang gõ }
   const [toast, setToast] = useState(null)
   const [anDanh, setAnDanh] = useState(false)
+  const [dangXuat, setDangXuat] = useState(false)
 
   useEffect(() => { taiDs() }, [])
   async function taiDs() {
@@ -40,9 +41,41 @@ export default function QuanTri() {
     } catch (e) { setToast({ msg: e.message, kind: 'err' }) }
   }
 
+  async function xuatCRM() {
+    setDangXuat(true)
+    try {
+      const rows = await api.xuatCrm() || []
+      const head = ['Mã đơn', 'Kênh', 'Ngày nhận', 'Tài khoản', 'Tên khách', 'SĐT',
+        'Tỉnh', 'Phường/Xã', 'Địa chỉ', 'Đơn vị VC', 'Mã vận đơn', 'Thanh toán', 'Nguồn',
+        'Sản phẩm', 'Số lượng', 'Trạng thái', 'Hạn gọi', 'Số lần gọi', 'Kết quả cuối',
+        'Điểm neo', 'Ý kiến khách', 'Link ghi âm']
+      const esc = v => '"' + String(v ?? '').replace(/"/g, '""') + '"'
+      const lines = rows.map(r => [
+        r.ma_don, TT[r.kenh]?.nhan || r.kenh, ngayVN(r.ngay_nhan), r.tai_khoan, r.ten_khach, r.sdt,
+        r.tinh, r.phuong_xa, r.dia_chi, r.don_vi_vc, r.ma_van_chuyen, r.thanh_toan, r.nguon,
+        r.san_pham, r.so_luong, TT[r.trang_thai]?.nhan || r.trang_thai, ngayVN(r.han_goi),
+        r.so_lan_goi, KETQUA[r.ket_qua_cuoi] || r.ket_qua_cuoi || '', r.diem_neo ?? '',
+        r.y_kien, r.ghi_am
+      ].map(esc).join(','))
+      const blob = new Blob(['\uFEFF' + head.join(',') + '\n' + lines.join('\n')],
+        { type: 'text/csv;charset=utf-8' })
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(blob)
+      a.download = 'NS-CARE-CRM_' + new Date().toISOString().slice(0, 10) + '.csv'
+      a.click(); URL.revokeObjectURL(a.href)
+      setToast({ msg: 'Đã xuất ' + rows.length + ' dòng CRM ra Excel' })
+    } catch (e) { setToast({ msg: e.message, kind: 'err' }) } finally { setDangXuat(false) }
+  }
+
   if (tai) return <Spinner />
   return (
     <>
+      <div className="toolbar" style={{ marginBottom: 16 }}>
+        <div style={{ fontWeight: 700, color: 'var(--ink)' }}>Dữ liệu CRM</div>
+        <div className="sp" />
+        <button className="btn-ai" onClick={xuatCRM} disabled={dangXuat}>
+          {dangXuat ? 'Đang xuất…' : '⬇ Xuất toàn bộ CRM (Excel)'}</button>
+      </div>
       <div className="grid-2" style={{ marginTop: 0 }}>
         <Card className="pad">
           <SecTit phu="bấm số để sửa, Enter hoặc ✓ để lưu">Cấu hình hệ thống</SecTit>

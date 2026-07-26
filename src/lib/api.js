@@ -92,6 +92,7 @@ export const api = {
   boSungSdt: (phieu_id, sdt, ten) =>
     rpc('fn_bo_sung_sdt', { p_phieu_id: phieu_id, p_sdt: sdt, p_ten: ten || null }),
   cuocGoiKh: (phieu_id) => rpc('fn_cuoc_goi_kh', { p_phieu_id: phieu_id }),
+  xuatCrm: (tu, den) => rpc('fn_xuat_crm', { p_tu: tu || null, p_den: den || null }),
   async goiTongDai(sdt) {
     const { WEBHOOK_APP_URL, CALL_TOKEN } = await import('./config')
     if (!WEBHOOK_APP_URL) throw new Error('Chưa cấu hình tổng đài (WEBHOOK_APP_URL)')
