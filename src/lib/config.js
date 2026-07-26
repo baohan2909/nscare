@@ -14,5 +14,5 @@ export const DB_SCHEMA = 'care'
 //  Điền URL Web App của NS_CARE_webhook.gs (Deploy ▸ Web app ▸ /exec)
 //  + CALL_TOKEN đã đặt trong Script Properties của webhook đó.
 // ============================================================
-export const WEBHOOK_APP_URL = ''
+export const WEBHOOK_APP_URL = 'https://script.google.com/macros/s/AKfycbwtQrgpYeAWFKe5p2fwh1l05i2gROhkTWjCcU2twYZPRwrl-Dq_6UwG2KXnQZeqkTY/exec'
 export const CALL_TOKEN = ''

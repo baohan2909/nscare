@@ -13,8 +13,7 @@ const NHOM = [
     { id: 'mcd', nhan: 'Chiến dịch', Ic: IcSend, min: 'quan_ly' },
     { id: 'mkh', nhan: 'Kho khách hàng', Ic: IcUser, min: 'quan_ly' },
     { id: 'mmau', nhan: 'Mẫu tin Zalo', Ic: IcForm, min: 'quan_ly' },
-    { id: 'mph', nhan: 'Phản hồi Zalo', Ic: IcPhone, min: 'quan_ly', badgeKey: 'mktPh' },
-    { id: 'mzalo', nhan: 'Kết nối Zalo OA', Ic: IcGear, min: 'quan_ly' }
+    { id: 'mph', nhan: 'Phản hồi Zalo', Ic: IcPhone, min: 'quan_ly', badgeKey: 'mktPh' }
   ]},
   { g: 'Phân tích', items: [
     { id: 'pt', nhan: 'Phân tích ý kiến', Ic: IcChart, min: 'quan_ly' }
