@@ -29,7 +29,7 @@ export default function MktKhach() {
         <div className="tim-o"><IcSearch size={15} />
           <input placeholder="Tìm tên hoặc SĐT…" value={tim}
             onChange={e => { setTim(e.target.value); setTrang(0) }} /></div>
-        {[['', 'Tất cả'], ['follow', 'Quan tâm OA'], ['chua', 'Chưa quan tâm']].map(([v, n]) => (
+        {[['', 'Tất cả'], ['follow', 'Quan tâm OA'], ['co_zalo', 'Có Zalo ✓'], ['khong_zalo', 'Không Zalo'], ['chua', 'Chưa quan tâm']].map(([v, n]) => (
           <div key={v} className={'nhom-tab' + (follow === v ? ' on' : '')}
             onClick={() => { setFollow(v); setTrang(0) }}>{n}</div>
         ))}
@@ -49,8 +49,10 @@ export default function MktKhach() {
                   <td className="l">{fmtSdt(r.sdt)}</td>
                   <td className="l">{r.tinh || '—'}</td>
                   <td className="l" style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.dia_chi || '—'}</td>
-                  <td>{r.zalo_follow ? <Tt cls="hoan">Quan tâm</Tt>
-                    : r.co_zalo ? <Tt cls="cho">Có Zalo</Tt> : <Tt cls="klh">—</Tt>}</td>
+                  <td>{r.zalo_follow ? <Tt cls="hoan">Quan tâm OA</Tt>
+                    : r.zalo_tt === 'co_zalo' ? <Tt cls="cho">Có Zalo ✓</Tt>
+                    : r.zalo_tt === 'khong_zalo' ? <Tt cls="klh">Không Zalo</Tt>
+                    : <Tt cls="klh">Chưa rõ</Tt>}</td>
                 </tr>
               ))}
             </tbody>

@@ -12,7 +12,7 @@ export default function MktTongQuan({ moMan }) {
       <div className="row4">
         <div className="tq-lon"><div className="tq-lon-nhan">Kho khách hàng</div>
           <div className="tq-lon-so">{(d.tong_khach ?? 0).toLocaleString('vi')}</div>
-          <span className="tq-delta tang">SĐT sạch, sẵn sàng tiếp cận</span></div>
+          <span className="tq-delta tang">✓ Có Zalo: {(d.co_zalo ?? 0).toLocaleString('vi')} · ✗ Không: {(d.khong_zalo ?? 0).toLocaleString('vi')}</span></div>
         <div className="tq-bam" onClick={() => moMan?.('mkh')}>
           <div className="tq-lon"><div className="tq-lon-nhan">Đang quan tâm OA</div>
             <div className="tq-lon-so" style={{ color: 'var(--teal-deep)' }}>{(d.follow ?? 0).toLocaleString('vi')}</div>
@@ -47,6 +47,7 @@ export default function MktTongQuan({ moMan }) {
             <div className="r"><span className="n">1</span>Nhân viên NS CARE gọi xong mời khách bấm quan tâm OA để nhận ưu đãi.</div>
             <div className="r"><span className="n">2</span>In mã QR OA vào hộp mũ + đặt tại 220 cửa hàng.</div>
             <div className="r"><span className="n">3</span>Chạy chiến dịch ZNS kèm nút "Quan tâm OA" — mỗi follow mới là một kênh miễn phí trọn đời.</div>
+            <div className="r"><span className="n">✓</span>Hệ thống <b>tự nhận diện số có Zalo</b> qua mỗi chiến dịch: ZNS gửi tới → đánh dấu "Có Zalo ✓"; Zalo báo số không dùng → "Không Zalo" (khỏi tốn phí lần sau); khách quan tâm/nhắn tin → xác minh ngay.</div>
           </div>
         </Card>
       </div>
