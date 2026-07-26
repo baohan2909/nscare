@@ -443,3 +443,24 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .cd-pct{font-size:11.5px;font-weight:800;color:var(--teal-deep);margin-left:7px}
 .mkt-hang2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .mkt-dem{margin-top:14px;background:rgba(63,182,168,.08);border:1px solid rgba(63,182,168,.3);border-radius:11px;padding:11px 13px;font-size:12.5px;line-height:1.55;color:var(--ink)}
+
+/* ===== ĐẤU NỐI ZALO ===== */
+.zalo-canhbao{background:rgba(214,0,108,.06);border:1px solid rgba(214,0,108,.25);border-radius:11px;padding:11px 13px;font-size:12.5px;color:var(--ink);line-height:1.55;margin-bottom:14px}
+.zalo-buoc{display:grid;gap:12px;margin:16px 0}
+.zb{display:flex;gap:12px;align-items:flex-start}
+.zb-n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--grad);color:#fff;font-weight:800;font-size:12px;display:grid;place-items:center}
+.zb-nd b{font-size:13.5px;color:var(--ink)}
+.zb-mo{font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin-top:3px}
+.zb-mo code{background:#F0EEE8;padding:1px 6px;border-radius:5px;font-size:11.5px}
+.zb-mo a{color:var(--teal-deep);font-weight:600}
+.zalo-link{background:#FBFAF6;border:1px solid var(--line);border-radius:12px;padding:14px;margin:8px 0 16px}
+.zalo-link label{display:block;font-size:11.5px;font-weight:700;color:var(--ink-soft);margin:8px 0 5px}
+.zalo-link label:first-child{margin-top:0}
+.zl-o{display:flex;gap:8px}
+.zl-o input{flex:1;padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;font-size:12px;font-family:monospace;background:#fff}
+.zl-o button{padding:0 16px;border:0;border-radius:8px;background:var(--ink);color:#fff;font-weight:700;font-size:12.5px;cursor:pointer}
+.zalo-nut{display:flex;gap:10px;align-items:center}
+.zalo-nut .btn-ai.disabled{opacity:.5;pointer-events:none}
+.zalo-ok{margin-top:14px;background:rgba(31,138,112,.1);border:1px solid rgba(31,138,112,.3);border-radius:11px;padding:12px 14px;color:var(--green);font-weight:600;font-size:13px}
+.zalo-loi{margin-top:14px;background:rgba(214,0,108,.08);border:1px solid rgba(214,0,108,.3);border-radius:11px;padding:12px 14px;color:var(--magenta);font-size:13px}
+.mkt-nap-hd{background:rgba(63,182,168,.08);border:1px solid rgba(63,182,168,.3);border-radius:11px;padding:12px 14px;font-size:12.5px;line-height:1.6;color:var(--ink);margin-bottom:14px}

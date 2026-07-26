@@ -109,6 +109,12 @@ export const api = {
   mktCdChiTiet: (id) => rpc('fn_mkt_cd_chi_tiet', { p_id: id }),
   mktPhanHoi: (gh = 100) => rpc('fn_mkt_phan_hoi', { p_gh: gh }),
   mktPhanHoiXong: (id) => rpc('fn_mkt_phan_hoi_xong', { p_id: id }),
+  mktZaloKiemTra: async () => {
+    const { WEBHOOK_APP_URL } = await import('./config')
+    if (!WEBHOOK_APP_URL) throw new Error('Chưa cấu hình WEBHOOK_APP_URL')
+    const r = await fetch(WEBHOOK_APP_URL + '?src=zalo_test')
+    return r.json()
+  },
   async goiTongDai(sdt) {
     const { WEBHOOK_APP_URL, CALL_TOKEN } = await import('./config')
     if (!WEBHOOK_APP_URL) throw new Error('Chưa cấu hình tổng đài (WEBHOOK_APP_URL)')

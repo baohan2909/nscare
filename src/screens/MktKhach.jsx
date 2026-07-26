@@ -37,7 +37,11 @@ export default function MktKhach() {
         <span className="mkt-tongso">{tong.toLocaleString('vi')} khách</span>
       </div>
 
-      {tai ? <Spinner /> : rows.length === 0 ? <Empty text="Không có khách khớp bộ lọc" /> : <>
+      {!tai && tong === 0 &&
+        <div className="mkt-nap-hd">Kho khách đang trống. Việc <b>nạp 1 triệu dòng</b> chạy từ
+          Google Sheet qua Apps Script (không nạp từ web): mở file Apps Script ▸ menu
+          <b> NS CARE ▸ MKT: Nạp khách hàng</b> ▸ xem tiến độ tới "XONG". Nạp xong bấm Làm mới ở đây.</div>}
+      {tai ? <Spinner /> : rows.length === 0 ? <Empty text="Chưa có khách — nạp từ Apps Script (menu NS CARE ▸ MKT: Nạp khách hàng)" /> : <>
         <div className="tbl-wrap">
           <table className="tbl">
             <thead><tr><th className="l">Khách hàng</th><th className="l">SĐT</th>
