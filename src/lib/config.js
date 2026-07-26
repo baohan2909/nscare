@@ -1,11 +1,10 @@
 // ============================================================
-//  CẤU HÌNH KẾT NỐI SUPABASE — anh điền 2 giá trị dưới đây
-//  (Lấy ở Supabase > Project Settings > API)
+//  CẤU HÌNH KẾT NỐI SUPABASE
 //  Khoá ANON là khoá công khai an toàn: DB đã khoá cứng RLS,
 //  app chỉ chạm được qua các hàm fn_* nên lộ anon key không sao.
 // ============================================================
-export const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co'
-export const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY'
+export const SUPABASE_URL = 'https://huqpvmrvssrwtueyonjj.supabase.co'
+export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1cXB2bXJ2c3Nyd3R1ZXlvbmpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwMjQ3MTIsImV4cCI6MjEwMDYwMDcxMn0.SiXU4_p8iHKYH8-fTRvYbII3NAqqyxtKKeu_hYpCKwQ'
 
 // Schema đã tạo trong gói SQL nền móng. Đừng đổi.
 export const DB_SCHEMA = 'care'
