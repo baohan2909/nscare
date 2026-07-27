@@ -32,7 +32,8 @@ const META = {
   mcd: ['Chiến dịch Marketing', 'Tạo, chạy và đo lường chiến dịch Zalo'],
   mkh: ['Kho khách hàng', 'Dữ liệu khách đã làm sạch, sẵn sàng tiếp cận'],
   mmau: ['Mẫu tin Zalo', 'Soạn nội dung — xem trước như trên Zalo'],
-  mph: ['Phản hồi Zalo', 'Quan tâm mới & tin nhắn khách gửi OA']
+  mph: ['Phản hồi Zalo', 'Quan tâm mới & tin nhắn khách gửi OA'],
+  chat: ['Hộp chat Zalo', 'Trò chuyện với khách — thời gian thực, AI trực chat']
 }
 
 export default function App() {
@@ -46,7 +47,10 @@ export default function App() {
 
   useEffect(() => {
     if (!user) return
-    api.tongQuan().then(t => setBadges({ hangDoi: (t?.cho_goi_hom_nay || 0) + (t?.qua_han || 0) })).catch(() => {})
+    api.tongQuan().then(t => setBadges(b => ({ ...b, hangDoi: (t?.cho_goi_hom_nay || 0) + (t?.qua_han || 0) }))).catch(() => {})
+    const nap = () => api.htTongChuaDoc().then(n => setBadges(b => ({ ...b, chatChuaDoc: n || 0 }))).catch(() => {})
+    nap(); const t = setInterval(nap, 30000)
+    return () => clearInterval(t)
   }, [user, reload])
 
   if (!user) return <Login />
@@ -58,7 +62,7 @@ export default function App() {
   return (
     <div className="app">
       <Sidebar man={man} setMan={setMan} badges={badges} />
-      <div className="main">
+      <div className={'main' + (man === 'chat' ? ' man-codinh' : '')}>
         <Cmdbar tit={tit} sub={sub} dongBo="Kết nối trực tiếp"
           onNhapDon={['tq', 'hd', 'kh'].includes(man) ? () => setNhapDon(true) : null} />
         {man === 'tq' && <TongQuan key={reload} moHangDoi={(t) => { setTabHd(t); setMan('hd') }} />}

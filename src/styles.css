@@ -528,3 +528,35 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .con-nhap textarea{flex:1;border:1px solid var(--line);border-radius:12px;padding:11px 13px;font-size:13.5px;resize:none;max-height:120px;font-family:inherit}
 .con-gui{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--teal-deep));color:#fff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .con-gui:disabled{opacity:.4;cursor:not-allowed}
+
+/* ===== HỘP CHAT v2 — layout CỐ ĐỊNH, không cuộn trang ===== */
+.main.man-codinh{height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.main.man-codinh .chat-wrap.co-dinh{flex:1;min-height:0;height:auto;margin-bottom:14px}
+.chat-ds{min-height:0}
+.chat-main{min-height:0}
+.chat-than{flex:1;display:flex;min-height:0}
+.chat-than .chat-tin{flex:1}
+.cdi-av.anh,.cmd-av.anh{object-fit:cover}
+.cdi-ten-tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;display:inline-block;vertical-align:bottom}
+.cdi-pt.ai{color:#7C5CFC}
+.chat-ai-toancuc{margin:0 12px 10px;border:1px dashed var(--line);background:#fff;border-radius:11px;padding:8px 12px;font-size:12px;cursor:pointer;color:var(--muted);text-align:left}
+.chat-ai-toancuc.on{border-color:#7C5CFC;color:#5b3df0;background:rgba(124,92,252,.06)}
+.cmd-ten{display:flex;align-items:center;gap:6px}
+.cmd-sua{border:none;background:none;cursor:pointer;font-size:13px;color:var(--muted)}
+.cmd-sua:hover{color:var(--teal-deep)}
+.btn-mini.ai-ht{border-color:#7C5CFC;color:#5b3df0}
+.btn-mini.ai-ht.off{border-color:var(--line);color:var(--muted)}
+.ct-bong.ai{background:linear-gradient(135deg,#4b3aa8,#7C5CFC);color:#fff}
+.ct-ai-tag{display:block;font-size:10px;font-weight:800;opacity:.85;margin-bottom:3px}
+.ct-anh{max-width:220px;border-radius:10px;display:block;margin-bottom:6px}
+.chat-hoso{width:290px;flex-shrink:0;border-left:1px solid var(--line);background:#FCFBF9;display:flex;flex-direction:column;overflow-y:auto}
+.hs-dau{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
+.hs-than{padding:12px 14px;display:flex;flex-direction:column;gap:14px}
+.hs-o{display:flex;flex-direction:column;gap:5px}
+.hs-o label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.hs-o > b{font-size:14px}
+.hs-o > span{font-size:12.5px;color:var(--ink)}
+.hs-don{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px;gap:2px}
+.hs-don b{font-size:12.5px}
+.hs-sp{color:var(--muted)}
+.hs-trong{font-size:12px;color:var(--muted)}
