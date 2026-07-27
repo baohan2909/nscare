@@ -16,3 +16,5 @@ export const DB_SCHEMA = 'care'
 // ============================================================
 export const WEBHOOK_APP_URL = 'https://script.google.com/macros/s/AKfycbwtQrgpYeAWFKe5p2fwh1l05i2gROhkTWjCcU2twYZPRwrl-Dq_6UwG2KXnQZeqkTY/exec'
 export const CALL_TOKEN = ''
+
+export const APP_VERSION = '2.1.0'

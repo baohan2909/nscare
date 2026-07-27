@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { APP_VERSION } from '../lib/config'
 import { IcDash, IcPhone, IcUser, IcChart, IcForm, IcGear, IcChevL, IcOut, IcDown, IcMega, IcSend } from './Icons'
 
 const NHOM = [
@@ -27,19 +28,32 @@ const NHOM = [
 export default function Sidebar({ man, setMan, badges = {} }) {
   const [gon, setGon] = useState(false)
   const [caiDat, setCaiDat] = useState(null)   // sự kiện beforeinstallprompt
+  const [daCai, setDaCai] = useState(false)
   const { user, dangXuat, laQuyen } = useAuth()
   const active = man === 'phieu' ? 'hd' : man
 
   useEffect(() => {
+    const mm = window.matchMedia('(display-mode: standalone)')
+    if (mm.matches || window.navigator.standalone) setDaCai(true)
     const h = (e) => { e.preventDefault(); setCaiDat(e) }
+    const done = () => setDaCai(true)
     window.addEventListener('beforeinstallprompt', h)
-    return () => window.removeEventListener('beforeinstallprompt', h)
+    window.addEventListener('appinstalled', done)
+    return () => { window.removeEventListener('beforeinstallprompt', h); window.removeEventListener('appinstalled', done) }
   }, [])
 
   async function taiApp() {
-    if (caiDat) { caiDat.prompt(); setCaiDat(null); return }
-    // iPhone/Safari không có prompt — hướng dẫn
-    alert('Trên iPhone: bấm nút Chia sẻ (ô vuông mũi tên) ▸ "Thêm vào MH chính" để cài NS CARE như ứng dụng.')
+    if (caiDat) {                                 // Chrome/Edge PC: cài trực tiếp
+      caiDat.prompt(); const r = await caiDat.userChoice
+      if (r && r.outcome === 'accepted') setDaCai(true)
+      setCaiDat(null); return
+    }
+    const ua = navigator.userAgent
+    if (/safari/i.test(ua) && !/chrome|edg/i.test(ua)) {
+      alert('Safari: menu Chia sẻ \u25b8 "Th\u00eam v\u00e0o Dock" (ho\u1eb7c "Th\u00eam v\u00e0o MH ch\u00ednh") \u0111\u1ec3 c\u00e0i NS CARE nh\u01b0 \u1ee9ng d\u1ee5ng.')
+    } else {
+      alert('C\u00e0i NS CARE l\u00ean m\u00e1y t\u00ednh: m\u1edf b\u1eb1ng Chrome ho\u1eb7c Edge, b\u1ea5m bi\u1ec3u t\u01b0\u1ee3ng C\u00e0i \u0111\u1eb7t (m\u00e0n h\u00ecnh c\u00f3 m\u0169i t\u00ean \u2913) \u1edf g\u00f3c ph\u1ea3i thanh \u0111\u1ecba ch\u1ec9 \u25b8 C\u00e0i \u0111\u1eb7t. App ch\u1ea1y nh\u01b0 ph\u1ea7n m\u1ec1m ri\u00eang, c\u00f3 icon tr\u00ean desktop.')
+    }
   }
 
   return (
@@ -49,7 +63,9 @@ export default function Sidebar({ man, setMan, badges = {} }) {
       </button>
       <div className="side-logo">
         <div className="mark">NS</div>
-        <div className="tx"><div className="t">NS CARE</div><div className="s">Chăm sóc sau mua</div></div>
+        <div className="tx"><div className="t">NS CARE</div>
+          <div className="s">Chăm sóc sau mua</div>
+          <div className="ver">v{APP_VERSION}</div></div>
       </div>
 
       <nav className="side-nav">
@@ -74,9 +90,10 @@ export default function Sidebar({ man, setMan, badges = {} }) {
         })}
       </nav>
 
-      <button className="side-install" onClick={taiApp}>
-        <IcDown size={15} /><span className="side-txt">Tải ứng dụng</span>
-      </button>
+      {!daCai &&
+        <button className="side-install" onClick={taiApp}>
+          <IcDown size={15} /><span className="side-txt">Tải ứng dụng (PC)</span>
+        </button>}
 
       <div className="side-user">
         <div className="av">{(user?.ten || 'A').slice(0, 1).toUpperCase()}</div>
