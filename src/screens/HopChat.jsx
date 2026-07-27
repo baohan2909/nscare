@@ -13,6 +13,7 @@ const LOC = [
   { id: 'chua_doc', nhan: 'Chưa đọc' }
 ]
 const TT = { moi: 'Mới', dang_xu_ly: 'Đang xử lý', cho_khach: 'Chờ khách', xong: 'Xong' }
+const tenKH = (h) => h.ten || ('Khách #' + String(h.zalo_user_id || '').slice(-4))
 
 // tiếng "ting" nhẹ khi có tin mới (không cần file âm thanh)
 function ting() {
@@ -175,9 +176,9 @@ export default function HopChat() {
               <div key={h.id} className={'chat-ds-item' + (chon?.id === h.id ? ' on' : '')} onClick={() => moHt(h)}>
                 {h.avatar_url
                   ? <img className="cdi-av anh" src={h.avatar_url} alt="" />
-                  : <div className="cdi-av">{(h.ten || 'K').slice(0, 1).toUpperCase()}</div>}
+                  : <div className="cdi-av">{tenKH(h).replace('Khách #','K').slice(0, 1).toUpperCase()}</div>}
                 <div className="cdi-mid">
-                  <div className="cdi-ten"><span className="cdi-ten-tx">{h.ten || 'Khách Zalo'}</span>
+                  <div className="cdi-ten"><span className="cdi-ten-tx">{tenKH(h)}</span>
                     {h.chua_doc > 0 && <span className="cdi-dot">{h.chua_doc}</span>}</div>
                   <div className="cdi-tin">{h.tin_cuoi || '—'}</div>
                 </div>
@@ -199,9 +200,9 @@ export default function HopChat() {
         <div className="chat-main">
           <div className="chat-main-dau">
             {chon.avatar_url ? <img className="cmd-av anh" src={chon.avatar_url} alt="" />
-              : <div className="cmd-av">{(chon.ten || 'K').slice(0, 1).toUpperCase()}</div>}
+              : <div className="cmd-av">{tenKH(chon).replace('Khách #','K').slice(0, 1).toUpperCase()}</div>}
             <div className="cmd-info">
-              <b className="cmd-ten">{chon.ten || 'Khách Zalo'}
+              <b className="cmd-ten">{tenKH(chon)}
                 <button className="cmd-sua" title="Sửa tên / gắn SĐT"
                   onClick={() => setSuaKh({ ten: chon.ten || '', sdt: chon.sdt || '', dang: false })}>✎</button></b>
               <span className="cmd-sub">

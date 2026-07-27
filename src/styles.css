@@ -481,7 +481,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .chat-ds{width:320px;flex-shrink:0;border-right:1px solid var(--line);display:flex;flex-direction:column;background:#FCFBF9}
 .chat-ds-dau{padding:12px}
 .chat-tim{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13px}
-.chat-loc{display:flex;gap:6px;padding:0 12px 10px;flex-wrap:wrap}
+.chat-loc{display:flex;gap:6px;padding:0 12px 10px;overflow-x:auto;flex-wrap:nowrap}
+.chat-loc-nut{white-space:nowrap;flex-shrink:0}
 .chat-loc-nut{border:1px solid var(--line);background:#fff;border-radius:20px;padding:5px 11px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer}
 .chat-loc-nut.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 .chat-ds-list{flex:1;overflow-y:auto}
