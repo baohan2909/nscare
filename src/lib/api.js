@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import { layToken, xoaPhien } from './session'
+import { ZALO_GW_URL } from './config'
 
 // Gọi hàm fn_* trên Supabase. Tự chèn p_token (trừ khi bỏ qua).
 async function rpc(fn, args = {}, { token = true } = {}) {
@@ -112,6 +113,15 @@ export const api = {
   mktGuiThu: (mau_id, sdt) => rpc('fn_mkt_gui_thu', { p_mau_id: mau_id, p_sdt: sdt }),
   mktGuiThuDs: (mau_id) => rpc('fn_mkt_gui_thu_ds', { p_mau_id: mau_id, p_gh: 8 }),
   mktLienKetZalo: (su_kien_id, sdt) => rpc('fn_mkt_lien_ket_zalo', { p_su_kien_id: su_kien_id, p_sdt: sdt }),
+  // Gửi tức thì qua cổng Zalo (Vercel) — không qua hàng đợi cron
+  guiNgay: async (payload) => {
+    if (!ZALO_GW_URL) throw new Error('Chưa cấu hình ZALO_GW_URL')
+    const r = await fetch(ZALO_GW_URL + '/gui-ngay', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: layToken(), ...payload })
+    })
+    return r.json()
+  },
   async goiTongDai(sdt) {
     const { WEBHOOK_APP_URL, CALL_TOKEN } = await import('./config')
     if (!WEBHOOK_APP_URL) throw new Error('Chưa cấu hình tổng đài (WEBHOOK_APP_URL)')

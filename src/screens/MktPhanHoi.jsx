@@ -10,6 +10,7 @@ export default function MktPhanHoi() {
   const [tai, setTai] = useState(true)
   const [toast, setToast] = useState(null)
   const [lk, setLk] = useState(null)     // { id, sdt, dang }
+  const [tl, setTl] = useState(null)     // { id, uid, text, dang } trả lời
   useEffect(() => { taiDs() }, [])
   async function taiDs() {
     setTai(true)
@@ -41,6 +42,8 @@ export default function MktPhanHoi() {
                       {e.sdt && <div className="kh-sdt">{fmtSdt(e.sdt)}</div>}</td>
                     <td className="l">{e.noi_dung || '—'}</td>
                     <td>
+                      {e.zalo_user_id && (e.loai === 'nhan_tin' || e.loai === 'follow') &&
+                        <button className="btn-mini" onClick={() => setTl({ id: e.id, uid: e.zalo_user_id, text: '', dang: false })}>Trả lời</button>}
                       {!e.sdt && (e.loai === 'nhan_tin' || e.loai === 'follow') &&
                         <button className="btn-mini" onClick={() => setLk({ id: e.id, sdt: '', dang: false })}>Liên kết SĐT</button>}
                       {e.da_xu_ly ? ' ✓' :
@@ -52,6 +55,30 @@ export default function MktPhanHoi() {
             </tbody>
           </table>
         </div>}
+      {tl && (
+        <LopPhu onClose={() => setTl(null)} rong={460}>
+          <div className="lp-dau"><b>Trả lời khách trên Zalo OA</b>
+            <button className="lp-dong" onClick={() => setTl(null)}>✕</button></div>
+          <div className="lp-than">
+            <div className="nd-o"><label>Nội dung trả lời</label>
+              <textarea className="ta" rows={4} placeholder="Nhập tin nhắn gửi khách…" value={tl.text}
+                onChange={e => setTl(s => ({ ...s, text: e.target.value }))} /></div>
+            <div className="thu-luuy">Tin gửi NGAY qua Zalo OA, <b>miễn phí</b> trong 48 giờ kể từ tin cuối của khách.
+              Quá 48h Zalo không cho gửi tư vấn — khi đó cần khách nhắn lại.</div>
+          </div>
+          <div className="lp-chan">
+            <button className="btn-ghost" onClick={() => setTl(null)}>Huỷ</button>
+            <button className="btn-ai" disabled={!tl.text.trim() || tl.dang} onClick={async () => {
+              setTl(s => ({ ...s, dang: true }))
+              try {
+                const r = await api.guiNgay({ kieu: 'traloi', su_kien_id: tl.id, text: tl.text.trim() })
+                if (r.ok) { setToast({ msg: 'Đã gửi trả lời' }); setTl(null); taiDs() }
+                else { setToast({ msg: r.ma_loi === '-230' || r.ma_loi ? 'Quá 48h hoặc Zalo từ chối (' + r.ma_loi + ')' : 'Chưa gửi được', kind: 'err' }); setTl(s => s && ({ ...s, dang: false })) }
+              } catch (e) { setToast({ msg: e.message, kind: 'err' }); setTl(s => s && ({ ...s, dang: false })) }
+            }}>{tl.dang ? 'Đang gửi…' : 'Gửi trả lời'}</button>
+          </div>
+        </LopPhu>
+      )}
       {lk && (
         <LopPhu onClose={() => setLk(null)} rong={420}>
           <div className="lp-dau"><b>Liên kết số điện thoại với tài khoản Zalo này</b>

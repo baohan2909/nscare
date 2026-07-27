@@ -60,7 +60,7 @@ export default function MktMau() {
             <div className="nd-o"><label>Số điện thoại nhận tin thử</label>
               <input inputMode="tel" placeholder="VD: 0909xxxxxx" value={thu.sdt}
                 onChange={e => setThu(t => ({ ...t, sdt: e.target.value }))} /></div>
-            <div className="thu-luuy">Tin đi trong vòng ≤5 phút. Số nhận được qua kênh <b>miễn phí</b> khi
+            <div className="thu-luuy">Tin gửi NGAY khi bấm. Số nhận được qua kênh <b>miễn phí</b> khi
               đã Quan tâm OA và có nhắn tin cho OA trong 48h (liên kết số ở màn <b>Phản hồi Zalo</b>);
               mẫu <b>ZNS</b> gửi được mọi số. Nếu chưa có kênh, kết quả sẽ là "Bỏ qua — CHUA_CO_KENH".</div>
             {thu.ds && thu.ds.length > 0 && <div className="thu-ds">
@@ -80,15 +80,16 @@ export default function MktMau() {
             <button className="btn-ai" disabled={!thu.sdt.trim() || thu.dang} onClick={async () => {
               setThu(t => ({ ...t, dang: true }))
               try {
-                await api.mktGuiThu(thu.mau.id, thu.sdt.trim())
-                setToast({ msg: 'Đã xếp gửi thử — tin đi trong ≤5 phút' })
+                const r = await api.guiNgay({ kieu: 'thu', mau_id: thu.mau.id, sdt: thu.sdt.trim() })
+                if (r.ok) setToast({ msg: 'Đã gửi tới ' + thu.sdt.trim() + ' (kênh ' + (r.kenh === 'tu_van' ? 'tư vấn' : r.kenh) + ')' })
+                else if (r.ma_loi === 'CHUA_CO_KENH') setToast({ msg: 'Số này chưa có kênh gửi (chưa liên kết Zalo / mẫu không phải ZNS)', kind: 'err' })
+                else setToast({ msg: 'Chưa gửi được: ' + (r.loi || r.ma_loi || 'lỗi'), kind: 'err' })
                 const d = await api.mktGuiThuDs(thu.mau.id)
-                setThu(t => t && { ...t, ds: d || [], dang: false, sdt: '' })
+                setThu(t => t && { ...t, ds: d || [], dang: false, sdt: r.ok ? '' : thu.sdt })
               } catch (e) {
-                setToast({ msg: e.message.indexOf('SDT') >= 0 ? 'Số không hợp lệ (phải là di động VN)' : e.message, kind: 'err' })
-                setThu(t => t && { ...t, dang: false })
+                setToast({ msg: e.message, kind: 'err' }); setThu(t => t && { ...t, dang: false })
               }
-            }}>{thu.dang ? 'Đang xếp…' : 'Gửi thử ngay'}</button>
+            }}>{thu.dang ? 'Đang gửi…' : 'Gửi thử ngay'}</button>
           </div>
         </LopPhu>
       )}

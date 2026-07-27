@@ -20,9 +20,10 @@ export function gioVN(s) {
   if (!s) return '—'
   const d = new Date(s)
   if (isNaN(d)) return s
-  const t = new Date(d.getTime() + 7 * 3600 * 1000)
-  const i = t.toISOString()
-  return i.slice(8, 10) + '/' + i.slice(5, 7) + ' ' + i.slice(11, 16)
+  return d.toLocaleString('vi-VN', {
+    timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false
+  }).replace(',', '')
 }
 
 // 0909 123 456
