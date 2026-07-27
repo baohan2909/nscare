@@ -539,15 +539,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .chat-than .chat-tin{flex:1}
 .cdi-av.anh,.cmd-av.anh{object-fit:cover}
 .cdi-ten-tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;display:inline-block;vertical-align:bottom}
-.cdi-pt.ai{color:#7C5CFC}
-.chat-ai-toancuc{margin:0 12px 10px;border:1px dashed var(--line);background:#fff;border-radius:11px;padding:8px 12px;font-size:12px;cursor:pointer;color:var(--muted);text-align:left}
-.chat-ai-toancuc.on{border-color:#7C5CFC;color:#5b3df0;background:rgba(124,92,252,.06)}
 .cmd-ten{display:flex;align-items:center;gap:6px}
 .cmd-sua{border:none;background:none;cursor:pointer;font-size:13px;color:var(--muted)}
 .cmd-sua:hover{color:var(--teal-deep)}
-.btn-mini.ai-ht{border-color:#7C5CFC;color:#5b3df0}
-.btn-mini.ai-ht.off{border-color:var(--line);color:var(--muted)}
-.ct-bong.ai{background:linear-gradient(135deg,#4b3aa8,#7C5CFC);color:#fff}
 .ct-ai-tag{display:block;font-size:10px;font-weight:800;opacity:.85;margin-bottom:3px}
 .ct-anh{max-width:220px;border-radius:10px;display:block;margin-bottom:6px}
 .chat-hoso{width:290px;flex-shrink:0;border-left:1px solid var(--line);background:#FCFBF9;display:flex;flex-direction:column;overflow-y:auto}
@@ -561,3 +555,66 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .hs-don b{font-size:12.5px}
 .hs-sp{color:var(--muted)}
 .hs-trong{font-size:12px;color:var(--muted)}
+
+/* ═══════════ HỘP CHAT v3 — console hiện đại, AI = teal ═══════════ */
+.chat-ds-dau{display:flex;gap:8px;align-items:center;padding:12px 12px 8px}
+.chat-tim-o{flex:1;display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:11px;padding:0 11px;background:#fff;color:var(--muted)}
+.chat-tim-o .chat-tim{border:none;padding:10px 0;flex:1;font-size:13px;background:none;outline:none}
+.chat-loc-sel{border:1px solid var(--line);border-radius:11px;padding:9px 8px;font-size:12.5px;font-weight:600;background:#fff;color:var(--ink);max-width:110px}
+/* thẻ AI trực với switch */
+.ai-truc{display:flex;align-items:center;gap:10px;margin:2px 12px 10px;padding:10px 12px;border:1px solid rgba(63,182,168,.4);background:linear-gradient(135deg,rgba(20,33,58,.03),rgba(63,182,168,.07));border-radius:13px}
+.ai-truc-ic{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--navy),var(--teal-deep));color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ai-truc-tx{flex:1;display:flex;flex-direction:column;min-width:0}
+.ai-truc-tx b{font-size:12.5px}
+.ai-truc-tx span{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.switch{width:40px;height:22px;border-radius:20px;border:none;background:#D7D3CC;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.switch-num{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.switch.on{background:var(--teal-deep)}
+.switch.on .switch-num{left:20px}
+.chat-ds-item.unread .cdi-ten-tx{font-weight:800}
+.chat-ds-item.unread .cdi-tin{color:var(--ink);font-weight:600}
+.cdi-pt.ai{color:var(--teal-deep);display:flex;align-items:center;gap:3px;justify-content:flex-end}
+/* nút AI per hội thoại */
+.nut-ai-ht{display:flex;align-items:center;gap:5px;border:1px solid var(--teal-deep);color:var(--teal-deep);background:rgba(63,182,168,.08);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer}
+.nut-ai-ht.off{border-color:var(--line);color:var(--muted);background:#fff}
+/* bong bóng AI: trắng viền teal + glow nhẹ */
+.ct-bong.ai{background:#fff;border:1.5px solid rgba(63,182,168,.55);box-shadow:0 0 0 3px rgba(63,182,168,.08);color:var(--ink)}
+.ct-ai-tag{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:800;color:var(--teal-deep);margin-bottom:4px;letter-spacing:.3px}
+/* AI panel kết quả */
+.ai-panel{margin:0 16px 8px;border:1px solid rgba(63,182,168,.45);border-radius:14px;background:linear-gradient(160deg,rgba(63,182,168,.06),#fff);padding:10px 12px;box-shadow:0 4px 18px rgba(30,95,99,.08)}
+.ai-panel-dau{display:flex;align-items:center;gap:6px;color:var(--teal-deep);margin-bottom:8px}
+.ai-panel-dau b{font-size:12.5px}
+.ai-panel-dau .lp-dong{margin-left:auto}
+.ai-tomtat{font-size:13px;line-height:1.65;white-space:pre-wrap}
+.ai-gy-nut{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:11px;padding:9px 12px;font-size:12.5px;color:var(--ink);cursor:pointer;line-height:1.5;margin-bottom:6px}
+.ai-gy-nut:hover{border-color:var(--teal-deep);background:rgba(63,182,168,.06)}
+/* panel mẫu câu / emoji */
+.chat-panel{display:flex;flex-wrap:wrap;gap:6px;padding:8px 16px}
+.chat-panel.emoji{gap:2px}
+.emo{border:none;background:none;font-size:21px;cursor:pointer;padding:5px;border-radius:8px}
+.emo:hover{background:rgba(63,182,168,.12)}
+/* ═ COMPOSER lớn ═ */
+.composer{border-top:1px solid var(--line);padding:10px 16px 14px;background:#fff}
+.cn-canh{font-size:11.5px;color:#E5484D;font-weight:600;margin-bottom:8px}
+.composer-khung{border:1.5px solid var(--line);border-radius:16px;background:#FCFBF9;transition:border .15s}
+.composer-khung:focus-within{border-color:var(--teal-deep);box-shadow:0 0 0 3px rgba(63,182,168,.12)}
+.composer-ta{width:100%;border:none;background:none;resize:none;padding:13px 15px 4px;font-size:14px;line-height:1.55;font-family:inherit;outline:none;min-height:46px;max-height:170px}
+.composer-hang{display:flex;align-items:center;justify-content:space-between;padding:4px 8px 8px}
+.composer-tools{display:flex;align-items:center;gap:2px}
+.tool{display:flex;align-items:center;gap:5px;border:none;background:none;color:var(--muted);cursor:pointer;padding:7px 8px;border-radius:10px;font-size:12px;font-weight:700}
+.tool:hover{background:rgba(20,33,58,.06);color:var(--ink)}
+.tool.on{background:rgba(63,182,168,.14);color:var(--teal-deep)}
+.tool.ai{color:var(--teal-deep)}
+.tool.ai:hover{background:rgba(63,182,168,.12)}
+.tool-tx{display:none}
+@media (min-width:1100px){.tool-tx{display:inline}}
+.tool-chia{width:1px;height:20px;background:var(--line);margin:0 5px}
+.tool:disabled{opacity:.5;cursor:default}
+.ai-cham{display:inline-flex;gap:3px}
+.ai-cham i{width:5px;height:5px;border-radius:50%;background:var(--teal-deep);animation:aic 1s infinite}
+.ai-cham i:nth-child(2){animation-delay:.15s}
+.ai-cham i:nth-child(3){animation-delay:.3s}
+@keyframes aic{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+.composer-gui{display:flex;align-items:center;gap:7px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--navy),var(--teal-deep));color:#fff;font-weight:800;font-size:13px;padding:10px 18px;cursor:pointer}
+.composer-gui:disabled{opacity:.4;cursor:not-allowed}
+.composer-gui:not(:disabled):hover{filter:brightness(1.1)}

@@ -36,3 +36,12 @@ export const IcSend = ({ size = 18, ...p }) => (
     <path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>
   </svg>
 )
+
+// ===== Icon hộp chat v3 (SVG stroke, không emoji) =====
+export const IcRobot = (p) => <S {...p}><rect x="4" y="8" width="16" height="11" rx="3"/><circle cx="9" cy="13" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="13" r="1.2" fill="currentColor" stroke="none"/><path d="M9 16.5h6M12 8V5M12 5a1.5 1.5 0 10-.01-3.01A1.5 1.5 0 0012 5zM4 12H2m20 0h-2"/></S>
+export const IcSpark = (p) => <S {...p}><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></S>
+export const IcImg = (p) => <S {...p}><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.6"/><path d="M21 16l-5-5-6.5 6.5M9 19l-4-4-2 2"/></S>
+export const IcSmile = (p) => <S {...p}><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 007 0"/><circle cx="9" cy="10" r=".9" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r=".9" fill="currentColor" stroke="none"/></S>
+export const IcChat = (p) => <S {...p}><path d="M21 12a8 8 0 01-8 8H4l2.2-2.6A8 8 0 1121 12z"/><path d="M8.5 10.5h7M8.5 13.5h4.5"/></S>
+export const IcDoc = (p) => <S {...p}><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 16.5h4"/></S>
+export const IcPen = (p) => <S {...p}><path d="M17 3l4 4L8 20l-5 1 1-5z"/></S>
