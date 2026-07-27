@@ -17,6 +17,7 @@ import MktKhach from './screens/MktKhach'
 import MktChienDich from './screens/MktChienDich'
 import MktMau from './screens/MktMau'
 import MktPhanHoi from './screens/MktPhanHoi'
+import HopChat from './screens/HopChat'
 
 const NGAY = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })
 const META = {
@@ -72,6 +73,7 @@ export default function App() {
         {man === 'mkh' && <MktKhach />}
         {man === 'mmau' && <MktMau />}
         {man === 'mph' && <MktPhanHoi />}
+        {man === 'chat' && <HopChat />}
       </div>
       {nhapDon && <NhapDon onClose={() => setNhapDon(false)} onXong={() => setReload(r => r + 1)} />}
     </div>

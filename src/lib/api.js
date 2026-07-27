@@ -122,6 +122,19 @@ export const api = {
     })
     return r.json()
   },
+  aiGoiY: async (lich_su, goi_y_so = 3) => {
+    const r = await fetch(ZALO_GW_URL + '/ai-goi-y', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: layToken(), lich_su, goi_y_so })
+    })
+    return r.json()
+  },
+  // ===== HỘP CHAT =====
+  htDs: (loc, tim) => rpc('fn_ht_ds', { p_loc: loc, p_tim: tim || null }),
+  htTin: (ht) => rpc('fn_ht_tin', { p_ht: ht }),
+  htGan: (ht, ma_nv) => rpc('fn_ht_gan', { p_ht: ht, p_ma_nv: ma_nv || null }),
+  htTrangThai: (ht, tt) => rpc('fn_ht_trang_thai', { p_ht: ht, p_tt: tt }),
+  htMauCau: () => rpc('fn_ht_mau_cau', {}),
   async goiTongDai(sdt) {
     const { WEBHOOK_APP_URL, CALL_TOKEN } = await import('./config')
     if (!WEBHOOK_APP_URL) throw new Error('Chưa cấu hình tổng đài (WEBHOOK_APP_URL)')
