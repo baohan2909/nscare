@@ -130,7 +130,7 @@ export const api = {
     return r.json()
   },
   // ===== HỘP CHAT =====
-  htDs: (loc, tim) => rpc('fn_ht_ds', { p_loc: loc, p_tim: tim || null }),
+  htDs: (loc, tim, the) => rpc('fn_ht_ds', { p_loc: loc, p_tim: tim || null, p_the: the || null }),
   htTin: (ht) => rpc('fn_ht_tin', { p_ht: ht }),
   htGan: (ht, ma_nv) => rpc('fn_ht_gan', { p_ht: ht, p_ma_nv: ma_nv || null }),
   htTrangThai: (ht, tt) => rpc('fn_ht_trang_thai', { p_ht: ht, p_tt: tt }),
@@ -140,6 +140,10 @@ export const api = {
   htAiTat: (ht, tat) => rpc('fn_ht_ai_tat', { p_ht: ht, p_tat: tat }),
   htSuaKhach: (ht, ten, sdt) => rpc('fn_ht_sua_khach', { p_ht: ht, p_ten: ten, p_sdt: sdt }),
   htTongChuaDoc: () => rpc('fn_ht_tong_chua_doc', {}),
+  htTheDs: () => rpc('fn_ht_the_ds', {}),
+  htGanThe: (ht, nhan) => rpc('fn_ht_gan_the', { p_ht: ht, p_nhan: nhan }),
+  htUuTien: (ht, uu) => rpc('fn_ht_uu_tien', { p_ht: ht, p_uu: uu }),
+  htNhanVien: () => rpc('fn_ht_nhan_vien', {}),
   async goiTongDai(sdt) {
     const { WEBHOOK_APP_URL, CALL_TOKEN } = await import('./config')
     if (!WEBHOOK_APP_URL) throw new Error('Chưa cấu hình tổng đài (WEBHOOK_APP_URL)')

@@ -18,6 +18,7 @@ import MktChienDich from './screens/MktChienDich'
 import MktMau from './screens/MktMau'
 import MktPhanHoi from './screens/MktPhanHoi'
 import HopChat from './screens/HopChat'
+import CauHinhAI from './screens/CauHinhAI'
 
 const NGAY = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })
 const META = {
@@ -33,7 +34,8 @@ const META = {
   mkh: ['Kho khách hàng', 'Dữ liệu khách đã làm sạch, sẵn sàng tiếp cận'],
   mmau: ['Mẫu tin Zalo', 'Soạn nội dung — xem trước như trên Zalo'],
   mph: ['Phản hồi Zalo', 'Quan tâm mới & tin nhắn khách gửi OA'],
-  chat: ['Hộp chat Zalo', 'Trò chuyện với khách — thời gian thực, AI trực chat']
+  chat: ['Hộp chat Zalo', 'Trò chuyện với khách — thời gian thực, AI trực chat'],
+  chai: ['Cấu hình AI', 'Trợ lý AI trực chat — model, phong cách, tri thức nghiệp vụ']
 }
 
 export default function App() {
@@ -78,6 +80,7 @@ export default function App() {
         {man === 'mmau' && <MktMau />}
         {man === 'mph' && <MktPhanHoi />}
         {man === 'chat' && <HopChat />}
+        {man === 'chai' && <CauHinhAI />}
       </div>
       {nhapDon && <NhapDon onClose={() => setNhapDon(false)} onXong={() => setReload(r => r + 1)} />}
     </div>

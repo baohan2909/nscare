@@ -47,6 +47,9 @@ export default function HopChat() {
   const [hoSo, setHoSo] = useState(false)
   const [k360, setK360] = useState(null)
   const [suaKh, setSuaKh] = useState(null)
+  const [theDs, setTheDs] = useState([])
+  const [nvDs, setNvDs] = useState([])
+  const [panelThe, setPanelThe] = useState(false)
   const [toast, setToast] = useState(null)
   const cuonRef = useRef(null)
   const taRef = useRef(null)
@@ -60,14 +63,17 @@ export default function HopChat() {
     else locSan.current = true
   }, [laQuyen])
 
+  const [locThe, setLocThe] = useState('')
   const napDs = useCallback(async () => {
-    try { setDs(await api.htDs(loc, tim) || []) } catch (e) { /* im */ }
+    try { setDs(await api.htDs(loc, tim, locThe) || []) } catch (e) { /* im */ }
     setTaiDs(false)
-  }, [loc, tim])
+  }, [loc, tim, locThe])
   useEffect(() => { setTaiDs(true); napDs() }, [napDs])
   useEffect(() => {
     api.htMauCau().then(m => setMau(m || [])).catch(() => {})
     api.htCauHinh().then(c => setAi(c || { ai_tu_dong: false })).catch(() => {})
+    api.htTheDs().then(t => setTheDs(t || [])).catch(() => {})
+    if (laQuyen('quan_ly')) api.htNhanVien().then(n => setNvDs(n || [])).catch(() => {})
     if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission()
   }, [])
 
@@ -191,6 +197,23 @@ export default function HopChat() {
       catch (e) { setK360(String(e.message).indexOf('KHONG_THAY_KHACH') >= 0 ? { chua_mua: true } : { loi: true }) }
     }
   }
+  async function toggleThe(ten) {
+    const cur = chon.nhan || []
+    const moi = cur.includes(ten) ? cur.filter(x => x !== ten) : [...cur, ten]
+    try { await api.htGanThe(chon.id, moi); setChon(c => ({ ...c, nhan: moi })); napDs() }
+    catch (e) { setToast({ msg: e.message, kind: 'err' }) }
+  }
+  async function toggleUuTien() {
+    const moi = !chon.uu_tien
+    try { await api.htUuTien(chon.id, moi); setChon(c => ({ ...c, uu_tien: moi })); napDs() }
+    catch (e) { setToast({ msg: e.message, kind: 'err' }) }
+  }
+  async function chuyenNV(ma) {
+    try { await api.htGan(chon.id, ma); const nv = nvDs.find(x => x.ma_nv === ma)
+      setChon(c => ({ ...c, phu_trach: ma, phu_trach_ten: nv?.ten })); napDs()
+      setToast({ msg: 'Đã chuyển cho ' + (nv?.ten || ma) }) }
+    catch (e) { setToast({ msg: e.message, kind: 'err' }) }
+  }
 
   const canGui = chon && chon.con_48h !== false
 
@@ -207,6 +230,13 @@ export default function HopChat() {
             {LOC.filter(l => !l.min || laQuyen(l.min)).map(l => <option key={l.id} value={l.id}>{l.nhan}</option>)}
           </select>
         </div>
+        {theDs.length > 0 &&
+          <div className="chat-loc-the">
+            <button className={'the-loc' + (locThe === '' ? ' on' : '')} onClick={() => setLocThe('')}>Tất cả thẻ</button>
+            {theDs.map(t => <button key={t.id} className={'the-loc' + (locThe === t.ten ? ' on' : '')}
+              style={locThe === t.ten ? { background: t.mau, borderColor: t.mau, color: '#fff' } : { borderColor: t.mau, color: t.mau }}
+              onClick={() => setLocThe(locThe === t.ten ? '' : t.ten)}>{t.ten}</button>)}
+          </div>}
 
         {laQuyen('quan_ly') &&
           <div className="ai-truc">
@@ -225,9 +255,14 @@ export default function HopChat() {
                   ? <img className="cdi-av anh" src={h.avatar_url} alt="" />
                   : <div className="cdi-av">{tenKH(h).replace('Khách #', 'K').slice(0, 1).toUpperCase()}</div>}
                 <div className="cdi-mid">
-                  <div className="cdi-ten"><span className="cdi-ten-tx">{tenKH(h)}</span>
+                  <div className="cdi-ten">{h.uu_tien && <span className="cdi-sao">★</span>}<span className="cdi-ten-tx">{tenKH(h)}</span>
                     {h.chua_doc > 0 && <span className="cdi-dot">{h.chua_doc}</span>}</div>
                   <div className="cdi-tin">{h.tin_cuoi || '—'}</div>
+                  {(h.nhan || []).length > 0 &&
+                    <div className="cdi-the">{(h.nhan || []).slice(0, 3).map(nh => {
+                      const t = theDs.find(x => x.ten === nh)
+                      return <span key={nh} className="cdi-the-chip" style={{ background: (t?.mau || '#1E5F63') + '1a', color: t?.mau || '#1E5F63' }}>{nh}</span>
+                    })}</div>}
                 </div>
                 <div className="cdi-r">
                   <div className="cdi-gio">{h.tin_cuoi_luc ? gioVN(h.tin_cuoi_luc).slice(6) : ''}</div>
@@ -259,6 +294,13 @@ export default function HopChat() {
               </span>
             </div>
             <div className="cmd-act">
+              <button className={'cmd-sao' + (chon.uu_tien ? ' on' : '')} onClick={toggleUuTien} title="Đánh dấu ưu tiên">★</button>
+              <button className={'btn-mini' + (panelThe ? ' on' : '')} onClick={() => setPanelThe(v => !v)} title="Gắn thẻ">🏷 Thẻ</button>
+              {laQuyen('quan_ly') && nvDs.length > 0 &&
+                <select className="cmd-tt" value={chon.phu_trach || ''} onChange={e => e.target.value && chuyenNV(e.target.value)} title="Chuyển nhân viên">
+                  <option value="">— Chuyển cho —</option>
+                  {nvDs.map(n => <option key={n.ma_nv} value={n.ma_nv}>{n.ten}</option>)}
+                </select>}
               {ai.ai_tu_dong && !chon.phu_trach &&
                 <button className={'nut-ai-ht' + (chon.ai_tat ? ' off' : '')} onClick={batTatAIHt}
                   title={chon.ai_tat ? 'AI đang tắt ở hội thoại này — bấm để bật' : 'AI đang trực hội thoại này — bấm để tắt'}>
@@ -271,6 +313,17 @@ export default function HopChat() {
             </div>
           </div>
 
+          {panelThe && (
+            <div className="the-panel">
+              {theDs.map(t => {
+                const on = (chon.nhan || []).includes(t.ten)
+                return <button key={t.id} className={'the-chip' + (on ? ' on' : '')}
+                  style={on ? { background: t.mau, borderColor: t.mau, color: '#fff' } : { borderColor: t.mau, color: t.mau }}
+                  onClick={() => toggleThe(t.ten)}>{on ? '✓ ' : ''}{t.ten}</button>
+              })}
+            </div>
+          )}
+
           <div className="chat-than">
             <div className="chat-tin" ref={cuonRef}>
               {taiTin ? <Spinner /> : tin.map(t => (
@@ -280,7 +333,7 @@ export default function HopChat() {
                     {t.anh_url ? <a href={t.anh_url} target="_blank" rel="noreferrer"><img className="ct-anh" src={t.anh_url} alt="" /></a> : null}
                     {t.noi_dung}
                     <div className="ct-meta">{gioVN(t.tao_luc)}
-                      {t.chieu === 'di' && t.nguoi_gui && t.nguoi_gui !== 'AI' ? ' · ' + t.nguoi_gui : ''}
+                      {t.chieu === 'di' && t.nguoi_gui === 'OA' ? ' · từ Zalo OA' : t.chieu === 'di' && t.nguoi_gui && t.nguoi_gui !== 'AI' ? ' · ' + t.nguoi_gui : ''}
                       {t.trang_thai === 'dang' ? ' · đang gửi…' : t.trang_thai === 'loi' ? ' · ⚠ lỗi' : ''}</div>
                   </div>
                 </div>

@@ -22,6 +22,7 @@ const NHOM = [
   ]},
   { g: 'Thiết lập', items: [
     { id: 'bo', nhan: 'Bộ câu hỏi', Ic: IcForm, min: 'quan_ly' },
+    { id: 'chai', nhan: 'Cấu hình AI', Ic: IcMega, min: 'quan_ly' },
     { id: 'admin', nhan: 'Quản trị', Ic: IcGear, min: 'admin' }
   ]}
 ]
