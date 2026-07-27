@@ -31,7 +31,13 @@ export default function MktChienDich() {
   }
   async function taoCd() {
     try {
-      const id = await api.mktCdTao(tao)
+      const p = { ...tao }
+      if (p.pk_follow === 'chi_dinh') {
+        p.pk_sdt_ds = (p.sdt_tho || '').split(/[\n,;\s]+/).map(x => x.trim()).filter(Boolean)
+        p.pk_follow = 'tat_ca'
+        delete p.sdt_tho
+      }
+      const id = await api.mktCdTao(p)
       await api.mktCdTrangThai(id, 'san_sang')            // duyệt chạy luôn
       setToast({ msg: 'Đã tạo chiến dịch — hệ thống sẽ gửi theo lịch trigger' })
       setTao(null); setDem(null); taiDs()
@@ -101,11 +107,22 @@ export default function MktChienDich() {
               </select></div>
             <div className="nd-o" style={{ marginTop: 10 }}><label>Tệp khách nhận</label>
               <select value={tao.pk_follow}
-                onChange={e => { const v = e.target.value; setTao(s => ({ ...s, pk_follow: v })); demThu({ ...tao, pk_follow: v }) }}>
+                onChange={e => { const v = e.target.value; setTao(s => ({ ...s, pk_follow: v })); if (v !== 'chi_dinh') demThu({ ...tao, pk_follow: v }) }}>
                 <option value="tat_ca">Toàn bộ kho khách</option>
                 <option value="follow">Chỉ người đang quan tâm OA</option>
                 <option value="chua_follow">Chỉ người CHƯA quan tâm (đi ZNS)</option>
+                <option value="chi_dinh">🧪 Danh sách SĐT chỉ định (test / nhóm nhỏ)</option>
               </select></div>
+            {tao.pk_follow === 'chi_dinh' &&
+              <div className="nd-o" style={{ marginTop: 10 }}>
+                <label>Dán SĐT — mỗi dòng một số (hoặc cách nhau dấu phẩy)</label>
+                <textarea className="ta" rows={4} placeholder={'0909xxxxxx\n0939xxxxxx'}
+                  value={tao.sdt_tho || ''}
+                  onChange={e => setTao(s => ({ ...s, sdt_tho: e.target.value }))} />
+                <div className="mkt-dem" style={{ marginTop: 8 }}>
+                  {(tao.sdt_tho || '').split(/[\n,;\s]+/).filter(x => x.trim()).length} số đã nhập —
+                  hệ thống tự chuẩn hoá và loại số sai đầu số di động VN.</div>
+              </div>}
             <div className="nd-o" style={{ marginTop: 10 }}><label>Lọc theo tỉnh (bỏ trống = toàn quốc)</label>
               <input value={tao.pk_tinh || ''} placeholder="VD: Hồ Chí Minh"
                 onChange={e => setTao(s => ({ ...s, pk_tinh: e.target.value }))}

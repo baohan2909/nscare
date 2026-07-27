@@ -109,6 +109,9 @@ export const api = {
   mktCdChiTiet: (id) => rpc('fn_mkt_cd_chi_tiet', { p_id: id }),
   mktPhanHoi: (gh = 100) => rpc('fn_mkt_phan_hoi', { p_gh: gh }),
   mktPhanHoiXong: (id) => rpc('fn_mkt_phan_hoi_xong', { p_id: id }),
+  mktGuiThu: (mau_id, sdt) => rpc('fn_mkt_gui_thu', { p_mau_id: mau_id, p_sdt: sdt }),
+  mktGuiThuDs: (mau_id) => rpc('fn_mkt_gui_thu_ds', { p_mau_id: mau_id, p_gh: 8 }),
+  mktLienKetZalo: (su_kien_id, sdt) => rpc('fn_mkt_lien_ket_zalo', { p_su_kien_id: su_kien_id, p_sdt: sdt }),
   async goiTongDai(sdt) {
     const { WEBHOOK_APP_URL, CALL_TOKEN } = await import('./config')
     if (!WEBHOOK_APP_URL) throw new Error('Chưa cấu hình tổng đài (WEBHOOK_APP_URL)')

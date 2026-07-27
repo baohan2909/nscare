@@ -464,3 +464,10 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .zalo-ok{margin-top:14px;background:rgba(31,138,112,.1);border:1px solid rgba(31,138,112,.3);border-radius:11px;padding:12px 14px;color:var(--green);font-weight:600;font-size:13px}
 .zalo-loi{margin-top:14px;background:rgba(214,0,108,.08);border:1px solid rgba(214,0,108,.3);border-radius:11px;padding:12px 14px;color:var(--magenta);font-size:13px}
 .mkt-nap-hd{background:rgba(63,182,168,.08);border:1px solid rgba(63,182,168,.3);border-radius:11px;padding:12px 14px;font-size:12.5px;line-height:1.6;color:var(--ink);margin-bottom:14px}
+
+/* ===== GỬI THỬ + LIÊN KẾT ===== */
+.mau-thu{margin:8px 0 2px}
+.thu-luuy{background:rgba(63,182,168,.08);border:1px solid rgba(63,182,168,.3);border-radius:11px;padding:10px 12px;font-size:12px;line-height:1.6;color:var(--ink);margin-top:12px}
+.thu-ds{margin-top:14px;border:1px solid var(--line);border-radius:11px;overflow:hidden}
+.thu-dong{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;font-size:12.5px;border-bottom:1px solid var(--line)}
+.thu-dong:last-child{border-bottom:0}
