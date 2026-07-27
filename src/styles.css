@@ -623,10 +623,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .composer-gui:not(:disabled):hover{filter:brightness(1.1)}
 
 /* thẻ trong hộp chat */
-.chat-loc-the{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;padding:0 12px 10px}
-.the-loc{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 8px;font-size:11px;font-weight:700;cursor:pointer;color:var(--muted);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.the-loc.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-.the-loc:first-child{grid-column:1 / -1}
+.chat-loc-the{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:0 12px 10px}
+.the-loc{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 4px;font-size:10.5px;font-weight:700;cursor:pointer;color:var(--muted);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.the-loc.on{filter:brightness(1)}
 .cdi-sao{color:#D4A017;margin-right:3px}
 .cdi-the{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
 .cdi-the-chip{font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px}

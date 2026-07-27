@@ -108,6 +108,26 @@ export default function HopChat() {
 
   useEffect(() => { if (cuonRef.current) cuonRef.current.scrollTop = cuonRef.current.scrollHeight }, [tin, taiTin])
 
+  // Nạp lại tin của hội thoại đang mở mỗi 8s — bảo đảm tin AI/OA/anh gửi đều hiện
+  // kể cả khi realtime chưa kịp đẩy về.
+  useEffect(() => {
+    if (!chon) return
+    const t = setInterval(async () => {
+      try {
+        const moi = await api.htTin(chon.id)
+        setTin(prev => {
+          if (!moi) return prev
+          const idPrev = prev.filter(x => typeof x.id === 'number').map(x => x.id)
+          const idMoi = moi.map(x => x.id)
+          // chỉ đè khi có tin mới hoặc số lượng khác (tránh nháy vô ích)
+          if (idMoi.length !== idPrev.length || idMoi.some(id => !idPrev.includes(id))) return moi
+          return prev
+        })
+      } catch (e) { /* im */ }
+    }, 8000)
+    return () => clearInterval(t)
+  }, [chon])
+
   // textarea tự cao theo nội dung
   function autoGrow() {
     const el = taRef.current
@@ -232,8 +252,7 @@ export default function HopChat() {
         </div>
         {theDs.length > 0 &&
           <div className="chat-loc-the">
-            <button className={'the-loc' + (locThe === '' ? ' on' : '')} onClick={() => setLocThe('')}>Tất cả thẻ</button>
-            {theDs.map(t => <button key={t.id} className={'the-loc' + (locThe === t.ten ? ' on' : '')}
+            {theDs.filter(t => t.ten !== 'Bảo hành').map(t => <button key={t.id} className={'the-loc' + (locThe === t.ten ? ' on' : '')}
               style={locThe === t.ten ? { background: t.mau, borderColor: t.mau, color: '#fff' } : { borderColor: t.mau, color: t.mau }}
               onClick={() => setLocThe(locThe === t.ten ? '' : t.ten)}>{t.ten}</button>)}
           </div>}
@@ -315,7 +334,7 @@ export default function HopChat() {
 
           {panelThe && (
             <div className="the-panel">
-              {theDs.map(t => {
+              {theDs.filter(t => t.ten !== 'Bảo hành').map(t => {
                 const on = (chon.nhan || []).includes(t.ten)
                 return <button key={t.id} className={'the-chip' + (on ? ' on' : '')}
                   style={on ? { background: t.mau, borderColor: t.mau, color: '#fff' } : { borderColor: t.mau, color: t.mau }}
