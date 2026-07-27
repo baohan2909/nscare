@@ -7,7 +7,7 @@ import { IcRobot, IcSpark } from '../components/Icons'
 
 const MODELS = [
   { id: 'claude-haiku-4-5', ten: 'Claude Haiku 4.5', mo: 'Nhanh · rẻ · văn phong tự nhiên — khuyên dùng cho chat CSKH' },
-  { id: 'claude-sonnet-4-6', ten: 'Claude Sonnet 4.6', mo: 'Mạnh hơn · đắt hơn — cho tình huống phức tạp' }
+  { id: 'claude-sonnet-5', ten: 'Claude Sonnet 5', mo: 'Mạnh hơn · đắt hơn — cho tình huống phức tạp' }
 ]
 
 export default function CauHinhAI() {

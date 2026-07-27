@@ -383,10 +383,17 @@ export default function HopChat() {
 
           {/* panel mẫu câu / emoji */}
           {panel === 'mau' && (
-            <div className="chat-panel">
-              {mau.map(m => <button key={m.id} className="mau-nut" title={m.noi_dung}
-                onClick={() => { chenText(m.noi_dung.replace('{ten}', chon.ten || 'anh/chị')); setPanel(null) }}>
-                <b>{m.nhom}</b> · {m.tieu_de}</button>)}
+            <div className="chat-panel-mau">
+              {Object.entries(mau.reduce((g, m) => { (g[m.nhom] = g[m.nhom] || []).push(m); return g }, {})).map(([nhom, ds]) => (
+                <div className="mau-nhom" key={nhom}>
+                  <div className="mau-nhom-ten">{nhom.replace(/^\d+\.\s*/, '')}</div>
+                  <div className="mau-nhom-ds">
+                    {ds.map(m => <button key={m.id} className="mau-nut" title={m.noi_dung}
+                      onClick={() => { chenText(m.noi_dung.replace('{ten}', chon.ten || 'anh/chị')); setPanel(null) }}>
+                      {m.tieu_de}</button>)}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
           {panel === 'emoji' && (
