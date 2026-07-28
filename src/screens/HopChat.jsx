@@ -341,10 +341,9 @@ export default function HopChat() {
                   <option value="">Chuyển NV…</option>
                   {nvDs.map(n => <option key={n.ma_nv} value={n.ma_nv}>{n.ten}</option>)}
                 </select>}
-              {ai.ai_tu_dong && !chon.phu_trach &&
-                <button className={'nut-ai-ht' + (chon.ai_tat ? ' off' : '')} onClick={batTatAIHt}
-                  title={chon.ai_tat ? 'AI đang TẮT ở hội thoại này — bấm để cho AI trả lời tự động' : 'AI đang TRỰC hội thoại này — bấm để tắt, tự mình trả lời'}>
-                  <IcRobot size={14} /> {chon.ai_tat ? 'Bật AI' : 'Tắt AI'}</button>}
+              <button className={'nut-ai-ht' + ((chon.ai_tat || !ai.ai_tu_dong || chon.phu_trach) ? ' off' : '')} onClick={batTatAIHt}
+                title={!ai.ai_tu_dong ? 'AI tổng đang tắt (bật ở Cấu hình AI). Bấm để chuẩn bị cho hội thoại này' : chon.phu_trach ? 'Hội thoại đã có người phụ trách nên AI không tự trả lời' : chon.ai_tat ? 'AI đang TẮT ở hội thoại này — bấm để AI tự trả lời' : 'AI đang TRỰC hội thoại này — bấm để tắt, tự trả lời'}>
+                <IcRobot size={14} /> {chon.ai_tat ? 'AI: tắt' : (ai.ai_tu_dong && !chon.phu_trach) ? 'AI: trực' : 'AI: nghỉ'}</button>
               {chon.phu_trach !== user?.ma_nv && <button className="btn-mini" onClick={nhanVe}>Nhận về tôi</button>}
               {chon.sdt && <button className="btn-mini" onClick={moHoSo}><IcUser size={13} /> Hồ sơ</button>}
               <select className="cmd-tt" value={chon.trang_thai} onChange={e => doiTT(e.target.value)}>
@@ -425,8 +424,8 @@ export default function HopChat() {
           {/* AI panel kết quả */}
           {aiGY && (
             <div className="ai-panel">
-              <div className="ai-panel-dau"><IcSpark size={14} /> <b>NS AI {aiGY.tom_tat ? '— tóm tắt hội thoại' : 'đề xuất trả lời'}</b>
-                <button className="lp-dong" onClick={() => setAiGY(null)}>✕</button></div>
+              <div className="ai-panel-dau"><IcSpark size={14} /> <b>NS AI {aiGY.tom_tat ? '— Tóm tắt hội thoại' : '— Gợi ý trả lời'}</b>
+                <button className="ai-panel-dong" onClick={() => setAiGY(null)}>Đóng ✕</button></div>
               {aiGY.tom_tat
                 ? <div className="ai-tomtat">{aiGY.tom_tat}</div>
                 : (aiGY.ds || []).map((g, i) =>
