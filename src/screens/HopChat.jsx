@@ -82,6 +82,20 @@ export default function HopChat() {
     try { setTin(await api.htTin(h.id) || []) } catch (e) { /* im */ }
     setTaiTin(false)
     setDs(d => d.map(x => x.id === h.id ? { ...x, chua_doc: 0 } : x))
+    if (!h.ten || !h.avatar_url) layTen(h.id, true)   // tự lấy tên/ảnh Zalo nếu thiếu
+  }
+
+  async function layTen(htId, imLang) {
+    try {
+      const r = await api.guiNgay({ kieu: 'lay_ten', hoi_thoai_id: htId })
+      if (r.ok) {
+        setChon(c => c && c.id === htId ? { ...c, ten: r.ten || c.ten, avatar_url: r.avatar || c.avatar_url } : c)
+        napDs()
+        if (!imLang) setToast({ msg: 'Đã lấy tên từ Zalo: ' + (r.ten || '(không có tên)') })
+      } else if (!imLang) {
+        setToast({ msg: 'Zalo không trả tên (' + (r.loi || '') + (r.zalo ? ' — ' + r.zalo : '') + '). Khách chưa Quan tâm OA thì Zalo không cho tên — dùng nút ✎ gõ tay.', kind: 'err' })
+      }
+    } catch (e) { if (!imLang) setToast({ msg: e.message, kind: 'err' }) }
   }
 
   useEffect(() => {
@@ -100,7 +114,13 @@ export default function HopChat() {
         }
         napDs()
       })
-      .on('postgres_changes', { event: '*', schema: 'care', table: 'ht_hoi_thoai' }, () => napDs())
+      .on('postgres_changes', { event: '*', schema: 'care', table: 'ht_hoi_thoai' }, (p) => {
+        napDs()
+        const c = chonRef.current
+        if (c && p.new && p.new.id === c.id) {
+          api.htTin(c.id).then(m => m && setTin(m)).catch(() => {})
+        }
+      })
       .subscribe()
     const bo = setInterval(napDs, 20000)
     return () => { supabase.removeChannel(ch); clearInterval(bo) }
@@ -305,7 +325,8 @@ export default function HopChat() {
             <div className="cmd-info">
               <b className="cmd-ten">{tenKH(chon)}
                 <button className="cmd-sua" title="Sửa tên / gắn SĐT"
-                  onClick={() => setSuaKh({ ten: chon.ten || '', sdt: chon.sdt || '', dang: false })}><IcPen size={13} /></button></b>
+                  onClick={() => setSuaKh({ ten: chon.ten || '', sdt: chon.sdt || '', dang: false })}><IcPen size={13} /></button>
+                <button className="cmd-sua" title="Lấy lại tên + ảnh từ Zalo" onClick={() => layTen(chon.id, false)}>↻</button></b>
               <span className="cmd-sub">
                 {chon.sdt ? fmtSdt(chon.sdt) + ' · ' : 'Chưa gắn SĐT · '}
                 {TT[chon.trang_thai] || chon.trang_thai}
@@ -345,18 +366,31 @@ export default function HopChat() {
 
           <div className="chat-than">
             <div className="chat-tin" ref={cuonRef}>
-              {taiTin ? <Spinner /> : tin.map(t => (
-                <div key={t.id} className={'ct-dong ' + (t.chieu === 'di' ? 'di' : 'den')}>
-                  <div className={'ct-bong' + (t.nguoi_gui === 'AI' ? ' ai' : '')}>
-                    {t.nguoi_gui === 'AI' && <span className="ct-ai-tag"><IcSpark size={11} /> NS AI</span>}
-                    {t.anh_url ? <a href={t.anh_url} target="_blank" rel="noreferrer"><img className="ct-anh" src={t.anh_url} alt="" /></a> : null}
-                    {t.noi_dung}
-                    <div className="ct-meta">{gioVN(t.tao_luc)}
-                      {t.chieu === 'di' && t.nguoi_gui === 'OA' ? ' · từ Zalo OA' : t.chieu === 'di' && t.nguoi_gui && t.nguoi_gui !== 'AI' ? ' · ' + t.nguoi_gui : ''}
-                      {t.trang_thai === 'dang' ? ' · đang gửi…' : t.trang_thai === 'loi' ? ' · ⚠ lỗi' : ''}</div>
+              {taiTin ? <Spinner /> : tin.map((t, i) => {
+                const truoc = tin[i - 1]
+                const ngayMoi = !truoc || String(t.tao_luc).slice(0, 10) !== String(truoc.tao_luc).slice(0, 10)
+                const dauCum = !truoc || truoc.chieu !== t.chieu || ngayMoi
+                return (
+                  <div key={t.id}>
+                    {ngayMoi && <div className="ct-ngay"><span>{gioVN(t.tao_luc).slice(6)}</span></div>}
+                    {dauCum && t.chieu === 'den' &&
+                      <div className="ct-ten-kh">
+                        {chon.avatar_url ? <img className="ct-av" src={chon.avatar_url} alt="" /> : <span className="ct-av chu">{tenKH(chon).replace('Khách #', 'K').slice(0, 1)}</span>}
+                        <span>{tenKH(chon)}</span>
+                      </div>}
+                    <div className={'ct-dong ' + (t.chieu === 'di' ? 'di' : 'den') + (dauCum ? ' dau' : '')}>
+                      <div className={'ct-bong' + (t.nguoi_gui === 'AI' ? ' ai' : '')}>
+                        {t.nguoi_gui === 'AI' && <span className="ct-ai-tag"><IcSpark size={11} /> NS AI</span>}
+                        {t.anh_url ? <a href={t.anh_url} target="_blank" rel="noreferrer"><img className="ct-anh" src={t.anh_url} alt="" /></a> : null}
+                        {t.noi_dung}
+                        <div className="ct-meta">{gioVN(t.tao_luc).slice(0, 5)}
+                          {t.chieu === 'di' && t.nguoi_gui === 'OA' ? ' · từ Zalo OA' : t.chieu === 'di' && t.nguoi_gui && t.nguoi_gui !== 'AI' ? ' · ' + t.nguoi_gui : ''}
+                          {t.trang_thai === 'dang' ? ' · đang gửi…' : t.trang_thai === 'loi' ? ' · ⚠ lỗi' : ''}</div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
               {!taiTin && tin.length === 0 && <Empty text="Chưa có tin nhắn — tin cũ trước lúc đấu nối webhook sẽ không hiển thị" />}
             </div>
 
