@@ -50,6 +50,7 @@ export default function HopChat() {
   const [theDs, setTheDs] = useState([])
   const [nvDs, setNvDs] = useState([])
   const [panelThe, setPanelThe] = useState(false)
+  const [hoiPhamVi, setHoiPhamVi] = useState(false)
   const [toast, setToast] = useState(null)
   const cuonRef = useRef(null)
   const taRef = useRef(null)
@@ -226,27 +227,38 @@ export default function HopChat() {
     try { await api.htTrangThai(chon.id, tt); setChon(c => ({ ...c, trang_thai: tt })); napDs() }
     catch (e) { setToast({ msg: e.message, kind: 'err' }) }
   }
+  // hội thoại này có đang được AI trực không (theo phạm vi)
+  function aiDangTrucHt(h) {
+    if (!ai.ai_tu_dong || !h || h.phu_trach) return false
+    return ai.ai_pham_vi === 'tuy_chon' ? !!h.ai_bat : !h.ai_tat
+  }
   async function batTatAIHt() {
-    // AI tổng đang tắt → hướng dẫn bật thay vì im lặng
     if (!ai.ai_tu_dong) {
-      setToast({ msg: 'AI đang tắt toàn hệ thống. Bật công tắc "NS AI trực chat" ở cột trái để AI trả lời tự động.', kind: 'err' })
+      setToast({ msg: 'AI đang tắt toàn hệ thống. Bật công tắc "NS AI trực chat" ở cột trái để dùng.', kind: 'err' })
       return
     }
     if (chon.phu_trach) {
       setToast({ msg: 'Hội thoại này đã có người phụ trách nên AI không tự trả lời. Bỏ phụ trách thì AI trực lại.' })
       return
     }
-    const moi = !chon.ai_tat
-    try { await api.htAiTat(chon.id, moi); setChon(c => ({ ...c, ai_tat: moi })); napDs()
-      setToast({ msg: moi ? 'Đã tắt AI ở hội thoại này — bạn tự trả lời khách' : 'AI trực lại hội thoại này' }) }
-    catch (e) { setToast({ msg: e.message, kind: 'err' }) }
-  }
-  async function batTatAIToanCuc() {
-    if (!laQuyen('quan_ly')) return
-    const moi = !ai.ai_tu_dong
+    const dangTruc = aiDangTrucHt(chon)
+    const bat = !dangTruc
     try {
-      await api.htCauHinhLuu({ ai_tu_dong: moi }); setAi(a => ({ ...a, ai_tu_dong: moi }))
-      setToast({ msg: moi ? 'NS AI đang trực — tự trả lời khách chưa có người nhận' : 'NS AI đã tắt' })
+      await api.htAiHoiThoai(chon.id, bat)
+      setChon(c => ai.ai_pham_vi === 'tuy_chon' ? { ...c, ai_bat: bat } : { ...c, ai_tat: !bat }); napDs()
+      setToast({ msg: bat ? 'AI trực hội thoại này' : 'Đã tắt AI ở hội thoại này — bạn tự trả lời' })
+    } catch (e) { setToast({ msg: e.message, kind: 'err' }) }
+  }
+  function gatAI() {
+    if (!laQuyen('quan_ly')) return
+    if (ai.ai_tu_dong) { luuAI(false, ai.ai_pham_vi) }   // đang bật → tắt luôn
+    else setHoiPhamVi(true)                               // đang tắt → hỏi phạm vi rồi bật
+  }
+  async function luuAI(bat, phamVi) {
+    try {
+      await api.htCauHinhLuu({ ai_tu_dong: bat, ai_pham_vi: phamVi })
+      setAi(a => ({ ...a, ai_tu_dong: bat, ai_pham_vi: phamVi })); setHoiPhamVi(false)
+      setToast({ msg: !bat ? 'NS AI đã tắt' : phamVi === 'tuy_chon' ? 'NS AI bật — chỉ trả lời hội thoại bạn chọn' : 'NS AI bật — trả lời tất cả khách chưa ai nhận' })
     } catch (e) { setToast({ msg: e.message, kind: 'err' }) }
   }
   async function moHoSo() {
@@ -299,16 +311,16 @@ export default function HopChat() {
         {laQuyen('quan_ly') &&
           <div className={'ai-truc' + (ai.ai_tu_dong ? ' on' : '')}>
             <span className={'ai-truc-ic' + (ai.ai_tu_dong ? ' song' : '')}><IcSpark size={16} /></span>
-            <div className="ai-truc-tx"><b>NS AI trực chat {ai.ai_tu_dong ? <span className="ai-on-tag">ĐANG BẬT</span> : <span className="ai-off-tag">ĐANG TẮT</span>}</b>
-              <span>{ai.ai_tu_dong ? 'AI tự trả lời khách chưa có người nhận' : 'Bấm công tắc để bật AI trả lời tự động'}</span></div>
-            <button className={'switch' + (ai.ai_tu_dong ? ' on' : '')} onClick={batTatAIToanCuc}
+            <div className="ai-truc-tx"><b>NS AI trực chat</b>
+              <span>{!ai.ai_tu_dong ? 'AI trả lời khách tự động' : ai.ai_pham_vi === 'tuy_chon' ? 'Chế độ: chỉ hội thoại bạn chọn' : 'Chế độ: tất cả khách chưa ai nhận'}</span></div>
+            <button className={'switch' + (ai.ai_tu_dong ? ' on' : '')} onClick={gatAI}
               aria-label="Bật tắt AI trực chat"><span className="switch-num" /></button>
           </div>}
 
         <div className="chat-ds-list">
           {taiDs ? <Spinner /> : ds.length === 0 ? <Empty text={loc === 'toi' ? 'Chưa có hội thoại gán cho bạn — đổi bộ lọc sang "Tất cả"' : 'Chưa có hội thoại'} /> :
             ds.map(h => (
-              <div key={h.id} className={'chat-ds-item' + (chon?.id === h.id ? ' on' : '') + (h.chua_doc > 0 ? ' unread' : '') + (ai.ai_tu_dong && !h.ai_tat && !h.phu_trach ? ' ai-truc-item' : '')} onClick={() => moHt(h)}>
+              <div key={h.id} className={'chat-ds-item' + (chon?.id === h.id ? ' on' : '') + (h.chua_doc > 0 ? ' unread' : '') + (aiDangTrucHt(h) ? ' ai-truc-item' : '')} onClick={() => moHt(h)}>
                 {h.avatar_url
                   ? <img className="cdi-av anh" src={h.avatar_url} alt="" />
                   : <div className="cdi-av">{tenKH(h).replace('Khách #', 'K').slice(0, 1).toUpperCase()}</div>}
@@ -317,7 +329,7 @@ export default function HopChat() {
                     {h.chua_doc > 0 && <span className="cdi-dot">{h.chua_doc}</span>}</div>
                   <div className="cdi-tin">{h.tin_cuoi || '—'}</div>
                   <div className="cdi-meta-row">
-                    {ai.ai_tu_dong && !h.ai_tat && !h.phu_trach && <span className="cdi-ai-badge"><span className="cham-song" /> AI đang trực</span>}
+                    {aiDangTrucHt(h) && <span className="cdi-ai-badge"><span className="cham-song" /> AI đang trực</span>}
                     {h.phu_trach && <span className="cdi-nv-badge">{h.phu_trach === user?.ma_nv ? 'Tôi phụ trách' : (h.phu_trach_ten || h.phu_trach)}</span>}
                     {(h.nhan || []).slice(0, 2).map(nh => {
                       const t = theDs.find(x => x.ten === nh)
@@ -337,7 +349,7 @@ export default function HopChat() {
       {!chon ? (
         <div className="chat-rong"><IcChat size={44} /><p>Chọn một hội thoại để bắt đầu</p></div>
       ) : (
-        <div className={'chat-main' + (ai.ai_tu_dong && !chon.ai_tat && !chon.phu_trach ? ' ai-dang-truc' : '')}>
+        <div className={'chat-main' + (aiDangTrucHt(chon) ? ' ai-dang-truc' : '')}>
           <div className="chat-main-dau">
             {chon.avatar_url ? <img className="cmd-av anh" src={chon.avatar_url} alt="" />
               : <div className="cmd-av">{tenKH(chon).replace('Khách #', 'K').slice(0, 1).toUpperCase()}</div>}
@@ -360,10 +372,10 @@ export default function HopChat() {
                   <option value="">Chuyển NV…</option>
                   {nvDs.map(n => <option key={n.ma_nv} value={n.ma_nv}>{n.ten}</option>)}
                 </select>}
-              <button className={'nut-ai-ht ' + (chon.ai_tat ? 'tat' : (ai.ai_tu_dong && !chon.phu_trach) ? 'truc' : 'nghi')} onClick={batTatAIHt}
-                title={!ai.ai_tu_dong ? 'AI tổng đang tắt (bật ở Cấu hình AI)' : chon.phu_trach ? 'Hội thoại đã có người phụ trách nên AI không tự trả lời' : chon.ai_tat ? 'AI đang TẮT ở hội thoại này — bấm để AI tự trả lời' : 'AI đang TRỰC hội thoại này — bấm để tắt, tự trả lời'}>
-                {(ai.ai_tu_dong && !chon.ai_tat && !chon.phu_trach) ? <span className="cham-song" /> : <IcSpark size={13} />}
-                {chon.ai_tat ? 'AI: tắt' : (ai.ai_tu_dong && !chon.phu_trach) ? 'AI đang trực' : 'AI: nghỉ'}</button>
+              <button className={'nut-ai-ht ' + (aiDangTrucHt(chon) ? 'truc' : (ai.ai_tu_dong && !chon.phu_trach) ? 'tat' : 'nghi')} onClick={batTatAIHt}
+                title={!ai.ai_tu_dong ? 'AI tổng đang tắt (bật ở cột trái)' : chon.phu_trach ? 'Hội thoại đã có người phụ trách nên AI không tự trả lời' : aiDangTrucHt(chon) ? 'AI đang TRỰC hội thoại này — bấm để tắt, tự trả lời' : 'AI đang TẮT ở hội thoại này — bấm để AI tự trả lời'}>
+                {aiDangTrucHt(chon) ? <span className="cham-song" /> : <IcSpark size={13} />}
+                {aiDangTrucHt(chon) ? 'AI đang trực' : (ai.ai_tu_dong && !chon.phu_trach) ? 'AI: tắt' : 'AI: nghỉ'}</button>
               {chon.phu_trach !== user?.ma_nv && <button className="btn-mini" onClick={nhanVe}>Nhận về tôi</button>}
               {chon.sdt && <button className="btn-mini" onClick={moHoSo}><IcUser size={13} /> Hồ sơ</button>}
               <select className="cmd-tt" value={chon.trang_thai} onChange={e => doiTT(e.target.value)}>
@@ -372,7 +384,7 @@ export default function HopChat() {
             </div>
           </div>
 
-          {ai.ai_tu_dong && !chon.ai_tat && !chon.phu_trach &&
+          {aiDangTrucHt(chon) &&
             <div className="ai-banner"><span className="cham-song" /> NS AI đang tự động trả lời hội thoại này — bấm <b>“AI đang trực”</b> để tắt và tự trả lời</div>}
 
           {panelThe && (
@@ -515,6 +527,23 @@ export default function HopChat() {
         </div>
       )}
 
+      {hoiPhamVi && (
+        <LopPhu onClose={() => setHoiPhamVi(false)} rong={440}>
+          <div className="lp-dau"><b>Bật NS AI trực chat</b>
+            <button className="lp-dong" onClick={() => setHoiPhamVi(false)}>✕</button></div>
+          <div className="lp-than">
+            <p className="pv-hoi">Anh muốn AI trả lời phạm vi nào?</p>
+            <button className="pv-chon" onClick={() => luuAI(true, 'tat_ca')}>
+              <span className="pv-ic"><IcSpark size={18} /></span>
+              <div><b>Bật cho tất cả</b><span>AI tự trả lời mọi khách nhắn tới khi chưa có nhân viên nhận.</span></div>
+            </button>
+            <button className="pv-chon" onClick={() => luuAI(true, 'tuy_chon')}>
+              <span className="pv-ic"><IcUser size={18} /></span>
+              <div><b>Tùy chọn từng hội thoại</b><span>AI chỉ trả lời những hội thoại bạn bật thủ công (bằng nút “AI” trong khung chat).</span></div>
+            </button>
+          </div>
+        </LopPhu>
+      )}
       {suaKh && (
         <LopPhu onClose={() => setSuaKh(null)} rong={420}>
           <div className="lp-dau"><b>Thông tin khách</b>

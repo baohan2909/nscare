@@ -138,6 +138,7 @@ export const api = {
   htCauHinh: () => rpc('fn_ht_cau_hinh', {}),
   htCauHinhLuu: (p) => rpc('fn_ht_cau_hinh_luu', { p }),
   htAiTat: (ht, tat) => rpc('fn_ht_ai_tat', { p_ht: ht, p_tat: tat }),
+  htAiHoiThoai: (ht, bat) => rpc('fn_ht_ai_hoi_thoai', { p_ht: ht, p_bat: bat }),
   htSuaKhach: (ht, ten, sdt) => rpc('fn_ht_sua_khach', { p_ht: ht, p_ten: ten, p_sdt: sdt }),
   htTongChuaDoc: () => rpc('fn_ht_tong_chua_doc', {}),
   htTheDs: () => rpc('fn_ht_the_ds', {}),
