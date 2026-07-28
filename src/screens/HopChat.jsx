@@ -227,8 +227,18 @@ export default function HopChat() {
     catch (e) { setToast({ msg: e.message, kind: 'err' }) }
   }
   async function batTatAIHt() {
+    // AI tổng đang tắt → hướng dẫn bật thay vì im lặng
+    if (!ai.ai_tu_dong) {
+      setToast({ msg: 'AI đang tắt toàn hệ thống. Bật công tắc "NS AI trực chat" ở cột trái để AI trả lời tự động.', kind: 'err' })
+      return
+    }
+    if (chon.phu_trach) {
+      setToast({ msg: 'Hội thoại này đã có người phụ trách nên AI không tự trả lời. Bỏ phụ trách thì AI trực lại.' })
+      return
+    }
     const moi = !chon.ai_tat
-    try { await api.htAiTat(chon.id, moi); setChon(c => ({ ...c, ai_tat: moi })); napDs() }
+    try { await api.htAiTat(chon.id, moi); setChon(c => ({ ...c, ai_tat: moi })); napDs()
+      setToast({ msg: moi ? 'Đã tắt AI ở hội thoại này — bạn tự trả lời khách' : 'AI trực lại hội thoại này' }) }
     catch (e) { setToast({ msg: e.message, kind: 'err' }) }
   }
   async function batTatAIToanCuc() {
@@ -289,8 +299,8 @@ export default function HopChat() {
         {laQuyen('quan_ly') &&
           <div className={'ai-truc' + (ai.ai_tu_dong ? ' on' : '')}>
             <span className={'ai-truc-ic' + (ai.ai_tu_dong ? ' song' : '')}><IcSpark size={16} /></span>
-            <div className="ai-truc-tx"><b>NS AI trực chat</b>
-              <span>{ai.ai_tu_dong ? 'Đang tự trả lời khách chưa có người nhận' : 'Đang tắt — khách chờ nhân viên'}</span></div>
+            <div className="ai-truc-tx"><b>NS AI trực chat {ai.ai_tu_dong ? <span className="ai-on-tag">ĐANG BẬT</span> : <span className="ai-off-tag">ĐANG TẮT</span>}</b>
+              <span>{ai.ai_tu_dong ? 'AI tự trả lời khách chưa có người nhận' : 'Bấm công tắc để bật AI trả lời tự động'}</span></div>
             <button className={'switch' + (ai.ai_tu_dong ? ' on' : '')} onClick={batTatAIToanCuc}
               aria-label="Bật tắt AI trực chat"><span className="switch-num" /></button>
           </div>}
@@ -378,6 +388,7 @@ export default function HopChat() {
 
           <div className="chat-than">
             <div className="chat-tin" ref={cuonRef} onScroll={onCuon}>
+             <div className="chat-tin-in">
               {taiTin ? <Spinner /> : tin.map((t, i) => {
                 const truoc = tin[i - 1]
                 const ngayMoi = !truoc || String(t.tao_luc).slice(0, 10) !== String(truoc.tao_luc).slice(0, 10)
@@ -407,6 +418,7 @@ export default function HopChat() {
                 )
               })}
               {!taiTin && tin.length === 0 && <Empty text="Chưa có tin nhắn — tin cũ trước lúc đấu nối webhook sẽ không hiển thị" />}
+             </div>
             </div>
 
             {hoSo && (

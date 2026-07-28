@@ -716,7 +716,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .chat-tin{
   background:linear-gradient(180deg,#FBFAF8 0%,#F7F5F1 100%);
   padding:22px 22px 8px}
-.chat-tin > div{max-width:780px;margin-left:auto;margin-right:auto}
+/* wrapper căn giữa nội dung, tin dùng đủ bề rộng */
+.chat-tin-in{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:2px}
 
 /* LỖI 4 — thanh tên khách: nổi bật, sang, mềm */
 .chat-main-dau{
@@ -780,7 +781,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .ct-ngay span{background:#fff;border:1px solid #EEE9E1;color:#A29C92;font-size:10px;font-weight:700;padding:3px 13px;border-radius:20px}
 
 /* LỖI 6 — panel AI: nút đóng rõ ràng */
-.ai-panel{margin:0 22px 10px;max-width:780px;margin-left:auto;margin-right:auto;
+.ai-panel{max-width:1080px;margin:0 auto 10px;
   border:1px solid #CDE9E4;border-radius:14px;background:linear-gradient(160deg,#F3FBF9,#fff);
   padding:12px 14px;box-shadow:0 6px 20px rgba(30,95,99,.1)}
 .ai-panel-dau{display:flex;align-items:center;gap:6px;color:var(--chat-teal);margin-bottom:9px;font-size:13px}
@@ -790,8 +791,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .ai-panel-dong:hover{background:#EAF6F4}
 
 /* composer: liền mạch với nền, mềm */
-.composer{background:#fff;border-top:1px solid #F0ECE5}
-.composer-khung{max-width:780px;margin:0 auto;background:#FBFAF8;border:1.5px solid #EBE7E0}
+.composer{background:#fff;border-top:1px solid #F0ECE5;padding-left:20px;padding-right:20px}
+.composer-khung{max-width:1080px;margin:0 auto;background:#FBFAF8;border:1.5px solid #EBE7E0}
 .composer-khung:focus-within{border-color:var(--chat-teal-soft);box-shadow:0 0 0 3px rgba(63,182,168,.1)}
 .composer-gui{background:linear-gradient(135deg,var(--chat-navy),var(--chat-teal))}
 
@@ -860,3 +861,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .cmd-info{min-width:0;flex:1}
 .cmd-ten{display:flex;align-items:center;gap:7px}
 .cmd-ten-tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+
+/* nhãn trạng thái AI tổng trên thẻ NS AI trực chat */
+.ai-on-tag{font-size:9px;font-weight:800;color:#fff;background:#1D9E75;border-radius:5px;padding:1px 6px;margin-left:6px;letter-spacing:.3px}
+.ai-off-tag{font-size:9px;font-weight:800;color:#8A857C;background:#EDEAE4;border-radius:5px;padding:1px 6px;margin-left:6px;letter-spacing:.3px}
+.ai-truc-tx b{display:flex;align-items:center}
