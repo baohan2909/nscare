@@ -882,3 +882,41 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .kenh-chip.fb{background:rgba(24,119,242,.1);color:#1877F2;border:1px solid rgba(24,119,242,.28)}
 .kenh-chip.lon{font-size:10px;padding:2.5px 9px;margin-top:0;margin-left:2px}
 .chat-loc-sel.kenh{max-width:96px}
+
+/* ═══════════ v4.1 — HEADER GỌN + TÊN ĐẦY ĐỦ + AI THEO NV ═══════════ */
+/* TÊN KHÁCH: KHÔNG bao giờ cắt mất chữ */
+.chat-main-dau{gap:12px;align-items:center}
+.cmd-info{min-width:0;flex:1 1 auto}
+.cmd-ten{display:flex;align-items:center;gap:8px;flex-wrap:wrap;line-height:1.25}
+.cmd-ten-tx{white-space:normal;overflow:visible;text-overflow:clip;max-width:none;
+  word-break:break-word;font-size:16px;font-weight:800;color:#14213A}
+/* cụm nút phải: gọn, không ép tên */
+.cmd-act{flex:0 0 auto;gap:8px}
+.cmd-act .cmd-tt.pt{max-width:170px;height:34px;border-radius:10px;font-size:12.5px;
+  border:1px solid #ECE8E1;background:#fff;color:#4A453D;padding:0 10px;cursor:pointer}
+.btn-mini.nhan{white-space:nowrap}
+/* nút ⋯ + menu thả xuống */
+.cmd-more-wrap{position:relative}
+.btn-mini.more{width:34px;height:34px;justify-content:center;padding:0;font-size:17px;font-weight:800;line-height:1}
+.btn-mini.more.on{border-color:var(--teal-deep);color:var(--teal-deep);background:#F0FAF8}
+.cmd-more{position:absolute;right:0;top:40px;z-index:40;width:236px;background:#fff;
+  border:1px solid #ECE8E1;border-radius:13px;box-shadow:0 12px 34px rgba(20,33,58,.16);padding:6px;
+  display:flex;flex-direction:column;gap:1px}
+.cmd-more button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;border:0;
+  background:transparent;padding:9px 11px;border-radius:9px;font-size:13px;color:#3A362F;cursor:pointer}
+.cmd-more button:hover{background:#F5F3EF}
+.cmd-more .sao{color:#C9C4BC}.cmd-more .sao.on{color:#D4A017}
+.cmd-more-tt{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 11px;border-top:1px solid #F0ECE5;margin-top:3px}
+.cmd-more-tt span{font-size:12px;color:var(--muted)}
+.cmd-more-tt select{flex:1;max-width:130px;height:30px;border-radius:8px;border:1px solid #ECE8E1;font-size:12px;padding:0 6px}
+/* nút AI header: 2 trạng thái (trực / bật) — bỏ 'nghỉ' */
+.nut-ai-ht.tat{background:#fff;color:var(--teal-deep);border-color:#CDE9E4}
+.nut-ai-ht.tat:hover{background:#F0FAF8}
+
+/* modal phạm vi — mục theo NV */
+.pv-nv{cursor:default;align-items:flex-start}
+.pv-nv:hover{border-color:#EBE7E0;background:#fff}
+.pv-nv-hang{display:flex;gap:8px;margin-top:9px}
+.pv-nv-hang select{flex:1;height:36px;border-radius:9px;border:1.5px solid #EBE7E0;font-size:13px;padding:0 9px;background:#fff}
+.pv-nv-ok{height:36px;padding:0 16px;border-radius:9px;border:0;background:linear-gradient(135deg,#14213A,#1E5F63);color:#fff;font-weight:700;font-size:13px;cursor:pointer}
+.pv-nv-ok:disabled{opacity:.4;cursor:not-allowed}

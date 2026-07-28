@@ -17,6 +17,6 @@ export const DB_SCHEMA = 'care'
 export const WEBHOOK_APP_URL = 'https://script.google.com/macros/s/AKfycbwtQrgpYeAWFKe5p2fwh1l05i2gROhkTWjCcU2twYZPRwrl-Dq_6UwG2KXnQZeqkTY/exec'
 export const CALL_TOKEN = ''
 
-export const APP_VERSION = '4.0.0'
+export const APP_VERSION = '4.1.0'
 
 export const ZALO_GW_URL = 'https://oa.nonson.com.vn'

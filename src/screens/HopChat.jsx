@@ -51,6 +51,8 @@ export default function HopChat() {
   const [nvDs, setNvDs] = useState([])
   const [panelThe, setPanelThe] = useState(false)
   const [hoiPhamVi, setHoiPhamVi] = useState(false)
+  const [nvPhamVi, setNvPhamVi] = useState('')
+  const [menuMore, setMenuMore] = useState(false)
   const [toast, setToast] = useState(null)
   const cuonRef = useRef(null)
   const taRef = useRef(null)
@@ -228,26 +230,24 @@ export default function HopChat() {
     try { await api.htTrangThai(chon.id, tt); setChon(c => ({ ...c, trang_thai: tt })); napDs() }
     catch (e) { setToast({ msg: e.message, kind: 'err' }) }
   }
-  // hội thoại này có đang được AI trực không (theo phạm vi)
+  // hội thoại này có đang được AI trực không (khớp cơ chế backend)
   function aiDangTrucHt(h) {
-    if (!ai.ai_tu_dong || !h || h.phu_trach) return false
-    return ai.ai_pham_vi === 'tuy_chon' ? !!h.ai_bat : !h.ai_tat
+    if (!ai.ai_tu_dong || !h || h.ai_tat) return false
+    if (h.ai_bat) return true
+    if ((ai.ai_pham_vi || 'tat_ca') === 'tat_ca') return !h.phu_trach
+    if (ai.ai_pham_vi === 'theo_nv') return !!h.phu_trach && h.phu_trach === ai.ai_nv_phu_trach
+    return false // tuy_chon: chỉ khi ai_bat
   }
   async function batTatAIHt() {
     if (!ai.ai_tu_dong) {
       setToast({ msg: 'AI đang tắt toàn hệ thống. Bật công tắc "NS AI trực chat" ở cột trái để dùng.', kind: 'err' })
       return
     }
-    if (chon.phu_trach) {
-      setToast({ msg: 'Hội thoại này đã có người phụ trách nên AI không tự trả lời. Bỏ phụ trách thì AI trực lại.' })
-      return
-    }
-    const dangTruc = aiDangTrucHt(chon)
-    const bat = !dangTruc
+    const bat = !aiDangTrucHt(chon)
     try {
       await api.htAiHoiThoai(chon.id, bat)
-      setChon(c => ai.ai_pham_vi === 'tuy_chon' ? { ...c, ai_bat: bat } : { ...c, ai_tat: !bat }); napDs()
-      setToast({ msg: bat ? 'AI trực hội thoại này' : 'Đã tắt AI ở hội thoại này — bạn tự trả lời' })
+      setChon(c => ({ ...c, ai_bat: bat, ai_tat: !bat })); napDs()
+      setToast({ msg: bat ? 'AI trực hội thoại này' + (chon.phu_trach ? ' (song song người phụ trách)' : '') : 'Đã tắt AI ở hội thoại này' })
     } catch (e) { setToast({ msg: e.message, kind: 'err' }) }
   }
   function gatAI() {
@@ -255,11 +255,15 @@ export default function HopChat() {
     if (ai.ai_tu_dong) { luuAI(false, ai.ai_pham_vi) }   // đang bật → tắt luôn
     else setHoiPhamVi(true)                               // đang tắt → hỏi phạm vi rồi bật
   }
-  async function luuAI(bat, phamVi) {
+  async function luuAI(bat, phamVi, nvPt) {
     try {
-      await api.htCauHinhLuu({ ai_tu_dong: bat, ai_pham_vi: phamVi })
-      setAi(a => ({ ...a, ai_tu_dong: bat, ai_pham_vi: phamVi })); setHoiPhamVi(false)
-      setToast({ msg: !bat ? 'NS AI đã tắt' : phamVi === 'tuy_chon' ? 'NS AI bật — chỉ trả lời hội thoại bạn chọn' : 'NS AI bật — trả lời tất cả khách chưa ai nhận' })
+      const p = { ai_tu_dong: bat, ai_pham_vi: phamVi }
+      if (phamVi === 'theo_nv') p.ai_nv_phu_trach = nvPt || null
+      await api.htCauHinhLuu(p)
+      setAi(a => ({ ...a, ai_tu_dong: bat, ai_pham_vi: phamVi, ai_nv_phu_trach: phamVi === 'theo_nv' ? (nvPt || null) : a.ai_nv_phu_trach }))
+      setHoiPhamVi(false); setNvPhamVi('')
+      const tenNv = nvDs.find(n => n.ma_nv === nvPt)?.ten
+      setToast({ msg: !bat ? 'NS AI đã tắt' : phamVi === 'tuy_chon' ? 'NS AI bật — chỉ hội thoại bạn chọn' : phamVi === 'theo_nv' ? ('NS AI bật — trực các hội thoại của ' + (tenNv || 'nhân viên đã chọn')) : 'NS AI bật — trả lời tất cả khách chưa ai nhận' })
     } catch (e) { setToast({ msg: e.message, kind: 'err' }) }
   }
   async function moHoSo() {
@@ -281,9 +285,9 @@ export default function HopChat() {
     catch (e) { setToast({ msg: e.message, kind: 'err' }) }
   }
   async function chuyenNV(ma) {
-    try { await api.htGan(chon.id, ma); const nv = nvDs.find(x => x.ma_nv === ma)
-      setChon(c => ({ ...c, phu_trach: ma, phu_trach_ten: nv?.ten })); napDs()
-      setToast({ msg: 'Đã chuyển cho ' + (nv?.ten || ma) }) }
+    try { await api.htGan(chon.id, ma); const nv = ma ? nvDs.find(x => x.ma_nv === ma) : null
+      setChon(c => ({ ...c, phu_trach: ma || null, phu_trach_ten: nv?.ten })); napDs()
+      setToast({ msg: ma ? 'Đã giao cho ' + (nv?.ten || ma) : 'Đã bỏ người phụ trách' }) }
     catch (e) { setToast({ msg: e.message, kind: 'err' }) }
   }
 
@@ -318,7 +322,7 @@ export default function HopChat() {
           <div className={'ai-truc' + (ai.ai_tu_dong ? ' on' : '')}>
             <span className={'ai-truc-ic' + (ai.ai_tu_dong ? ' song' : '')}><IcSpark size={16} /></span>
             <div className="ai-truc-tx"><b>NS AI trực chat</b>
-              <span>{!ai.ai_tu_dong ? 'AI trả lời khách tự động' : ai.ai_pham_vi === 'tuy_chon' ? 'Chế độ: chỉ hội thoại bạn chọn' : 'Chế độ: tất cả khách chưa ai nhận'}</span></div>
+              <span>{!ai.ai_tu_dong ? 'AI trả lời khách tự động' : ai.ai_pham_vi === 'tuy_chon' ? 'Chế độ: chỉ hội thoại bạn chọn' : ai.ai_pham_vi === 'theo_nv' ? ('Chế độ: theo ' + (nvDs.find(n => n.ma_nv === ai.ai_nv_phu_trach)?.ten || 'nhân viên')) : 'Chế độ: tất cả khách chưa ai nhận'}</span></div>
             <button className={'switch' + (ai.ai_tu_dong ? ' on' : '')} onClick={gatAI}
               aria-label="Bật tắt AI trực chat"><span className="switch-num" /></button>
           </div>}
@@ -362,33 +366,42 @@ export default function HopChat() {
               : <div className="cmd-av">{tenKH(chon).replace('Khách #', 'K').slice(0, 1).toUpperCase()}</div>}
             <div className="cmd-info">
               <b className="cmd-ten"><span className="cmd-ten-tx">{tenKH(chon)}</span>
-                <span className={'kenh-chip lon ' + (chon.kenh === 'facebook' ? 'fb' : 'za')}>{chon.kenh === 'facebook' ? 'Facebook' : 'Zalo'}</span>
-                <button className="cmd-sua" title="Sửa tên / gắn SĐT"
-                  onClick={() => setSuaKh({ ten: chon.ten || '', sdt: chon.sdt || '', dang: false })}><IcPen size={13} /></button>
-                <button className="cmd-sua" title="Lấy lại tên + ảnh từ Zalo" onClick={() => layTen(chon.id, false)}>↻</button></b>
+                <span className={'kenh-chip lon ' + (chon.kenh === 'facebook' ? 'fb' : 'za')}>{chon.kenh === 'facebook' ? 'Facebook' : 'Zalo'}</span></b>
               <span className="cmd-sub">
                 {chon.sdt ? fmtSdt(chon.sdt) + ' · ' : 'Chưa gắn SĐT · '}
                 {TT[chon.trang_thai] || chon.trang_thai}
-                {chon.con_48h === false && <span className="cmd-het48"> · Ngoài 48h</span>}
+                {chon.con_48h === false && <span className="cmd-het48"> · Ngoài cửa sổ gửi</span>}
               </span>
             </div>
             <div className="cmd-act">
-              <button className={'cmd-sao' + (chon.uu_tien ? ' on' : '')} onClick={toggleUuTien} title="Đánh dấu ưu tiên">★</button>
-              <button className={'btn-mini' + (panelThe ? ' on' : '')} onClick={() => setPanelThe(v => !v)} title="Gắn thẻ">🏷 Thẻ</button>
+              <button className={'nut-ai-ht ' + (aiDangTrucHt(chon) ? 'truc' : 'tat')} onClick={batTatAIHt}
+                title={!ai.ai_tu_dong ? 'AI tổng đang tắt (bật ở cột trái)' : aiDangTrucHt(chon) ? 'AI đang trực hội thoại này — bấm để tắt' : 'Bấm để AI trả lời hội thoại này (kể cả khi có người phụ trách)'}>
+                {aiDangTrucHt(chon) ? <span className="cham-song" /> : <IcSpark size={13} />}
+                {aiDangTrucHt(chon) ? 'AI đang trực' : 'Bật AI'}</button>
               {laQuyen('quan_ly') && nvDs.length > 0 &&
-                <select className="cmd-tt" value={chon.phu_trach || ''} onChange={e => e.target.value && chuyenNV(e.target.value)} title="Chuyển nhân viên">
-                  <option value="">Chuyển NV…</option>
+                <select className="cmd-tt pt" value={chon.phu_trach || ''} onChange={e => chuyenNV(e.target.value || null)} title="Người phụ trách">
+                  <option value="">Chưa ai phụ trách</option>
                   {nvDs.map(n => <option key={n.ma_nv} value={n.ma_nv}>{n.ten}</option>)}
                 </select>}
-              <button className={'nut-ai-ht ' + (aiDangTrucHt(chon) ? 'truc' : (ai.ai_tu_dong && !chon.phu_trach) ? 'tat' : 'nghi')} onClick={batTatAIHt}
-                title={!ai.ai_tu_dong ? 'AI tổng đang tắt (bật ở cột trái)' : chon.phu_trach ? 'Hội thoại đã có người phụ trách nên AI không tự trả lời' : aiDangTrucHt(chon) ? 'AI đang TRỰC hội thoại này — bấm để tắt, tự trả lời' : 'AI đang TẮT ở hội thoại này — bấm để AI tự trả lời'}>
-                {aiDangTrucHt(chon) ? <span className="cham-song" /> : <IcSpark size={13} />}
-                {aiDangTrucHt(chon) ? 'AI đang trực' : (ai.ai_tu_dong && !chon.phu_trach) ? 'AI: tắt' : 'AI: nghỉ'}</button>
-              {chon.phu_trach !== user?.ma_nv && <button className="btn-mini" onClick={nhanVe}>Nhận về tôi</button>}
-              {chon.sdt && <button className="btn-mini" onClick={moHoSo}><IcUser size={13} /> Hồ sơ</button>}
-              <select className="cmd-tt" value={chon.trang_thai} onChange={e => doiTT(e.target.value)}>
-                {Object.entries(TT).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-              </select>
+              {chon.phu_trach !== user?.ma_nv && <button className="btn-mini nhan" onClick={nhanVe}>Nhận về tôi</button>}
+              <div className="cmd-more-wrap">
+                <button className={'btn-mini more' + (menuMore ? ' on' : '')} onClick={() => setMenuMore(v => !v)} title="Thêm">⋯</button>
+                {menuMore && (
+                  <div className="cmd-more" onMouseLeave={() => setMenuMore(false)}>
+                    <button onClick={() => { toggleUuTien(); setMenuMore(false) }}><span className={chon.uu_tien ? 'sao on' : 'sao'}>★</span> {chon.uu_tien ? 'Bỏ ưu tiên' : 'Đánh dấu ưu tiên'}</button>
+                    <button onClick={() => { setPanelThe(v => !v); setMenuMore(false) }}>🏷 Gắn thẻ</button>
+                    <button onClick={() => { setSuaKh({ ten: chon.ten || '', sdt: chon.sdt || '', dang: false }); setMenuMore(false) }}><IcPen size={13} /> Sửa tên / SĐT</button>
+                    <button onClick={() => { layTen(chon.id, false); setMenuMore(false) }}>↻ Lấy lại tên từ {chon.kenh === 'facebook' ? 'Facebook' : 'Zalo'}</button>
+                    {chon.sdt && <button onClick={() => { moHoSo(); setMenuMore(false) }}><IcUser size={13} /> Hồ sơ khách 360°</button>}
+                    <div className="cmd-more-tt">
+                      <span>Trạng thái</span>
+                      <select value={chon.trang_thai} onChange={e => { doiTT(e.target.value); setMenuMore(false) }}>
+                        {Object.entries(TT).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -547,8 +560,20 @@ export default function HopChat() {
             </button>
             <button className="pv-chon" onClick={() => luuAI(true, 'tuy_chon')}>
               <span className="pv-ic"><IcUser size={18} /></span>
-              <div><b>Tùy chọn từng hội thoại</b><span>AI chỉ trả lời những hội thoại bạn bật thủ công (bằng nút “AI” trong khung chat).</span></div>
+              <div><b>Tùy chọn từng hội thoại</b><span>AI chỉ trả lời những hội thoại bạn bật thủ công (bằng nút “Bật AI” trong khung chat).</span></div>
             </button>
+            <div className="pv-chon pv-nv">
+              <span className="pv-ic"><IcUser size={18} /></span>
+              <div style={{ flex: 1 }}><b>Theo người phụ trách</b><span>AI trực tất cả hội thoại của một nhân viên — hỗ trợ trả lời thay khi họ bận.</span>
+                <div className="pv-nv-hang">
+                  <select value={nvPhamVi} onChange={e => setNvPhamVi(e.target.value)}>
+                    <option value="">— Chọn nhân viên —</option>
+                    {nvDs.map(n => <option key={n.ma_nv} value={n.ma_nv}>{n.ten}</option>)}
+                  </select>
+                  <button className="pv-nv-ok" disabled={!nvPhamVi} onClick={() => luuAI(true, 'theo_nv', nvPhamVi)}>Bật</button>
+                </div>
+              </div>
+            </div>
           </div>
         </LopPhu>
       )}
