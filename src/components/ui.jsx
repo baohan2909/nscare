@@ -55,12 +55,13 @@ const S = {
 }
 
 // Toast nhẹ — tự ẩn sau 2.6s
-export function Toast({ msg, kind, onHet }) {
+export function Toast({ msg, kind, onHet, onDone }) {
+  const dong = onHet || onDone
   useEffect(() => {
-    if (!msg || !onHet) return
-    const t = setTimeout(onHet, 2600)
+    if (!msg || !dong) return
+    const t = setTimeout(dong, 2600)
     return () => clearTimeout(t)
-  }, [msg, onHet])
+  }, [msg, dong])
   if (!msg) return null
   return <div className={'toast' + (kind === 'err' ? ' err' : '')}>{msg}</div>
 }

@@ -289,7 +289,7 @@ export default function HopChat() {
         <div className="chat-ds-list">
           {taiDs ? <Spinner /> : ds.length === 0 ? <Empty text={loc === 'toi' ? 'Chưa có hội thoại gán cho bạn — đổi bộ lọc sang "Tất cả"' : 'Chưa có hội thoại'} /> :
             ds.map(h => (
-              <div key={h.id} className={'chat-ds-item' + (chon?.id === h.id ? ' on' : '') + (h.chua_doc > 0 ? ' unread' : '')} onClick={() => moHt(h)}>
+              <div key={h.id} className={'chat-ds-item' + (chon?.id === h.id ? ' on' : '') + (h.chua_doc > 0 ? ' unread' : '') + (ai.ai_tu_dong && !h.ai_tat && !h.phu_trach ? ' ai-truc-item' : '')} onClick={() => moHt(h)}>
                 {h.avatar_url
                   ? <img className="cdi-av anh" src={h.avatar_url} alt="" />
                   : <div className="cdi-av">{tenKH(h).replace('Khách #', 'K').slice(0, 1).toUpperCase()}</div>}
@@ -297,17 +297,17 @@ export default function HopChat() {
                   <div className="cdi-ten">{h.uu_tien && <span className="cdi-sao">★</span>}<span className="cdi-ten-tx">{tenKH(h)}</span>
                     {h.chua_doc > 0 && <span className="cdi-dot">{h.chua_doc}</span>}</div>
                   <div className="cdi-tin">{h.tin_cuoi || '—'}</div>
-                  {(h.nhan || []).length > 0 &&
-                    <div className="cdi-the">{(h.nhan || []).slice(0, 3).map(nh => {
+                  <div className="cdi-meta-row">
+                    {ai.ai_tu_dong && !h.ai_tat && !h.phu_trach && <span className="cdi-ai-badge"><IcRobot size={10} /> AI đang trực</span>}
+                    {h.phu_trach && <span className="cdi-nv-badge">{h.phu_trach === user?.ma_nv ? 'Tôi phụ trách' : (h.phu_trach_ten || h.phu_trach)}</span>}
+                    {(h.nhan || []).slice(0, 2).map(nh => {
                       const t = theDs.find(x => x.ten === nh)
                       return <span key={nh} className="cdi-the-chip" style={{ background: (t?.mau || '#1E5F63') + '1a', color: t?.mau || '#1E5F63' }}>{nh}</span>
-                    })}</div>}
+                    })}
+                  </div>
                 </div>
                 <div className="cdi-r">
                   <div className="cdi-gio">{h.tin_cuoi_luc ? gioVN(h.tin_cuoi_luc).slice(6) : ''}</div>
-                  {h.phu_trach
-                    ? <div className="cdi-pt">{h.phu_trach === user?.ma_nv ? 'Tôi' : (h.phu_trach_ten || h.phu_trach)}</div>
-                    : ai.ai_tu_dong && !h.ai_tat ? <div className="cdi-pt ai"><IcRobot size={11} /> AI</div> : null}
                 </div>
               </div>
             ))}
@@ -338,13 +338,13 @@ export default function HopChat() {
               <button className={'btn-mini' + (panelThe ? ' on' : '')} onClick={() => setPanelThe(v => !v)} title="Gắn thẻ">🏷 Thẻ</button>
               {laQuyen('quan_ly') && nvDs.length > 0 &&
                 <select className="cmd-tt" value={chon.phu_trach || ''} onChange={e => e.target.value && chuyenNV(e.target.value)} title="Chuyển nhân viên">
-                  <option value="">— Chuyển cho —</option>
+                  <option value="">Chuyển NV…</option>
                   {nvDs.map(n => <option key={n.ma_nv} value={n.ma_nv}>{n.ten}</option>)}
                 </select>}
               {ai.ai_tu_dong && !chon.phu_trach &&
                 <button className={'nut-ai-ht' + (chon.ai_tat ? ' off' : '')} onClick={batTatAIHt}
-                  title={chon.ai_tat ? 'AI đang tắt ở hội thoại này — bấm để bật' : 'AI đang trực hội thoại này — bấm để tắt'}>
-                  <IcRobot size={14} /> {chon.ai_tat ? 'AI tắt' : 'AI trực'}</button>}
+                  title={chon.ai_tat ? 'AI đang TẮT ở hội thoại này — bấm để cho AI trả lời tự động' : 'AI đang TRỰC hội thoại này — bấm để tắt, tự mình trả lời'}>
+                  <IcRobot size={14} /> {chon.ai_tat ? 'Bật AI' : 'Tắt AI'}</button>}
               {chon.phu_trach !== user?.ma_nv && <button className="btn-mini" onClick={nhanVe}>Nhận về tôi</button>}
               {chon.sdt && <button className="btn-mini" onClick={moHoSo}><IcUser size={13} /> Hồ sơ</button>}
               <select className="cmd-tt" value={chon.trang_thai} onChange={e => doiTT(e.target.value)}>
