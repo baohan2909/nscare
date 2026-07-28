@@ -15,7 +15,7 @@ const NHOM = [
     { id: 'mkh', nhan: 'Kho khách hàng', Ic: IcUser, min: 'quan_ly' },
     { id: 'mmau', nhan: 'Mẫu tin Zalo', Ic: IcForm, min: 'quan_ly' },
     { id: 'mph', nhan: 'Phản hồi Zalo', Ic: IcPhone, min: 'quan_ly', badgeKey: 'mktPh' },
-    { id: 'chat', nhan: 'Hộp chat Zalo', Ic: IcMega, min: 'cham_soc', badgeKey: 'chatChuaDoc' }
+    { id: 'chat', nhan: 'Chat Zalo - Facebook', Ic: IcMega, min: 'cham_soc', badgeKey: 'chatChuaDoc' }
   ]},
   { g: 'Phân tích', items: [
     { id: 'pt', nhan: 'Phân tích ý kiến', Ic: IcChart, min: 'quan_ly' }

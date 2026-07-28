@@ -16,7 +16,8 @@ export default function MktTongQuan({ moMan }) {
         <div className="tq-bam" onClick={() => moMan?.('mkh')}>
           <div className="tq-lon"><div className="tq-lon-nhan">Đang quan tâm OA</div>
             <div className="tq-lon-so" style={{ color: 'var(--teal-deep)' }}>{(d.follow ?? 0).toLocaleString('vi')}</div>
-            <span className="tq-delta tang">{pctFollow}% kho khách · +{d.follow_7ngay ?? 0} trong 7 ngày</span></div></div>
+            <span className="tq-delta tang">{pctFollow}% kho khách · +{d.follow_7ngay ?? 0} trong 7 ngày</span>
+            <span className="tq-delta tang" style={{ color: '#1877F2' }}>Facebook: {(d.co_fb ?? 0).toLocaleString('vi')} khách · {(d.fb_24h ?? 0).toLocaleString('vi')} trong 24h</span></div></div>
         <div className="tq-bam" onClick={() => moMan?.('mcd')}>
           <div className="tq-lon"><div className="tq-lon-nhan">Chiến dịch đang chạy</div>
             <div className="tq-lon-so">{d.cd_dang_chay ?? 0}</div>
@@ -31,10 +32,12 @@ export default function MktTongQuan({ moMan }) {
 
       <div className="grid-2">
         <Card className="pad">
-          <SecTit phu="3 kênh Zalo — hệ thống tự chọn cho từng khách">Cách hệ thống gửi tin</SecTit>
+          <SecTit phu="4 kênh Zalo + Facebook — hệ thống tự chọn cho từng khách">Cách hệ thống gửi tin</SecTit>
           <div className="mkt-kenh">
             <div className="k"><b>Tin tư vấn</b><span className="tt hoan">Miễn phí</span>
               <p>Khách đã nhắn OA trong 48 giờ. Tỉ lệ đọc cao nhất — hệ thống ưu tiên kênh này.</p></div>
+            <div className="k"><b>Facebook Messenger</b><span className="tt hoan">Miễn phí</span>
+              <p>Khách đã nhắn Fanpage trong 24 giờ. Đồng bộ chung hộp chat, AI trả lời tự động.</p></div>
             <div className="k"><b>Broadcast</b><span className="tt cho">Theo gói OA</span>
               <p>Gửi hàng loạt cho người quan tâm OA (hạn mức gói). Càng nhiều follow, kênh này càng mạnh.</p></div>
             <div className="k"><b>ZNS</b><span className="tt klh">Tính phí/tin</span>

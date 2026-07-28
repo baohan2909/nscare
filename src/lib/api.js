@@ -130,7 +130,7 @@ export const api = {
     return r.json()
   },
   // ===== HỘP CHAT =====
-  htDs: (loc, tim, the) => rpc('fn_ht_ds', { p_loc: loc, p_tim: tim || null, p_the: the || null }),
+  htDs: (loc, tim, the, kenh) => rpc('fn_ht_ds', { p_loc: loc, p_tim: tim || null, p_the: the || null, p_kenh: kenh || null }),
   htTin: (ht) => rpc('fn_ht_tin', { p_ht: ht }),
   htGan: (ht, ma_nv) => rpc('fn_ht_gan', { p_ht: ht, p_ma_nv: ma_nv || null }),
   htTrangThai: (ht, tt) => rpc('fn_ht_trang_thai', { p_ht: ht, p_tt: tt }),
@@ -145,6 +145,7 @@ export const api = {
   htGanThe: (ht, nhan) => rpc('fn_ht_gan_the', { p_ht: ht, p_nhan: nhan }),
   htUuTien: (ht, uu) => rpc('fn_ht_uu_tien', { p_ht: ht, p_uu: uu }),
   htNhanVien: () => rpc('fn_ht_nhan_vien', {}),
+  mktLienKetFb: (ht, sdt) => rpc('fn_mkt_lien_ket_fb', { p_ht: ht, p_sdt: sdt }),
   async goiTongDai(sdt) {
     const { WEBHOOK_APP_URL, CALL_TOKEN } = await import('./config')
     if (!WEBHOOK_APP_URL) throw new Error('Chưa cấu hình tổng đài (WEBHOOK_APP_URL)')

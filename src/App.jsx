@@ -34,7 +34,7 @@ const META = {
   mkh: ['Kho khách hàng', 'Dữ liệu khách đã làm sạch, sẵn sàng tiếp cận'],
   mmau: ['Mẫu tin Zalo', 'Soạn nội dung — xem trước như trên Zalo'],
   mph: ['Phản hồi Zalo', 'Quan tâm mới & tin nhắn khách gửi OA'],
-  chat: ['Hộp chat Zalo', 'Trò chuyện với khách — thời gian thực, AI trực chat'],
+  chat: ['Chat Zalo - Facebook', 'Một hộp chat cho mọi kênh — thời gian thực, AI trực chat'],
   chai: ['Cấu hình AI', 'Trợ lý AI trực chat — model, phong cách, tri thức nghiệp vụ']
 }
 

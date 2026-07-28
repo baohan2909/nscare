@@ -65,10 +65,11 @@ export default function HopChat() {
   }, [laQuyen])
 
   const [locThe, setLocThe] = useState('')
+  const [locKenh, setLocKenh] = useState('')
   const napDs = useCallback(async () => {
-    try { setDs(await api.htDs(loc, tim, locThe) || []) } catch (e) { /* im */ }
+    try { setDs(await api.htDs(loc, tim, locThe, locKenh) || []) } catch (e) { /* im */ }
     setTaiDs(false)
-  }, [loc, tim, locThe])
+  }, [loc, tim, locThe, locKenh])
   useEffect(() => { setTaiDs(true); napDs() }, [napDs])
   useEffect(() => {
     api.htMauCau().then(m => setMau(m || [])).catch(() => {})
@@ -300,6 +301,11 @@ export default function HopChat() {
           <select className="chat-loc-sel" value={loc} onChange={e => setLoc(e.target.value)}>
             {LOC.filter(l => !l.min || laQuyen(l.min)).map(l => <option key={l.id} value={l.id}>{l.nhan}</option>)}
           </select>
+          <select className="chat-loc-sel kenh" value={locKenh} onChange={e => setLocKenh(e.target.value)} title="Lọc theo kênh">
+            <option value="">Mọi kênh</option>
+            <option value="zalo">Zalo</option>
+            <option value="facebook">Facebook</option>
+          </select>
         </div>
         {theDs.length > 0 &&
           <div className="chat-loc-the">
@@ -339,6 +345,7 @@ export default function HopChat() {
                 </div>
                 <div className="cdi-r">
                   <div className="cdi-gio">{h.tin_cuoi_luc ? gioVN(h.tin_cuoi_luc).slice(6) : ''}</div>
+                  <span className={'kenh-chip ' + (h.kenh === 'facebook' ? 'fb' : 'za')}>{h.kenh === 'facebook' ? 'Facebook' : 'Zalo'}</span>
                 </div>
               </div>
             ))}
@@ -355,6 +362,7 @@ export default function HopChat() {
               : <div className="cmd-av">{tenKH(chon).replace('Khách #', 'K').slice(0, 1).toUpperCase()}</div>}
             <div className="cmd-info">
               <b className="cmd-ten"><span className="cmd-ten-tx">{tenKH(chon)}</span>
+                <span className={'kenh-chip lon ' + (chon.kenh === 'facebook' ? 'fb' : 'za')}>{chon.kenh === 'facebook' ? 'Facebook' : 'Zalo'}</span>
                 <button className="cmd-sua" title="Sửa tên / gắn SĐT"
                   onClick={() => setSuaKh({ ten: chon.ten || '', sdt: chon.sdt || '', dang: false })}><IcPen size={13} /></button>
                 <button className="cmd-sua" title="Lấy lại tên + ảnh từ Zalo" onClick={() => layTen(chon.id, false)}>↻</button></b>
@@ -418,7 +426,7 @@ export default function HopChat() {
                         {t.anh_url ? <a href={t.anh_url} target="_blank" rel="noreferrer"><img className="ct-anh" src={t.anh_url} alt="" /></a> : null}
                         {t.noi_dung}
                         <div className="ct-meta">{gioVN(t.tao_luc).slice(0, 5)}
-                          {t.chieu === 'di' && t.nguoi_gui === 'OA' ? ' · từ Zalo OA' : t.chieu === 'di' && !laAI && t.nguoi_gui ? ' · ' + t.nguoi_gui : ''}
+                          {t.chieu === 'di' && t.nguoi_gui === 'OA' ? ' · từ Zalo OA' : t.chieu === 'di' && t.nguoi_gui === 'FB' ? ' · từ Fanpage' : t.chieu === 'di' && !laAI && t.nguoi_gui ? ' · ' + t.nguoi_gui : ''}
                           {t.trang_thai === 'dang' ? ' · đang gửi…' : t.trang_thai === 'loi' ? ' · ⚠ lỗi' : ''}</div>
                       </div>
                       {t.chieu === 'di' && (dauCum
@@ -496,10 +504,10 @@ export default function HopChat() {
 
           {/* ══ COMPOSER ══ */}
           <div className="composer">
-            {!canGui && <div className="cn-canh">Ngoài cửa sổ 48h — Zalo chỉ cho gửi khi khách nhắn lại</div>}
+            {!canGui && <div className="cn-canh">{chon.kenh === 'facebook' ? 'Ngoài cửa sổ 24h — Facebook chỉ cho gửi khi khách nhắn lại' : 'Ngoài cửa sổ 48h — Zalo chỉ cho gửi khi khách nhắn lại'}</div>}
             <div className="composer-khung">
               <textarea ref={taRef} rows={1} className="composer-ta"
-                placeholder={canGui ? 'Nhập tin nhắn cho khách… (Enter gửi · Shift+Enter xuống dòng)' : 'Chờ khách nhắn lại (ngoài 48h)'}
+                placeholder={canGui ? 'Nhập tin nhắn cho khách… (Enter gửi · Shift+Enter xuống dòng)' : 'Chờ khách nhắn lại (hết cửa sổ gửi)'}
                 value={oNhap} disabled={!canGui}
                 onChange={e => setONhap(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); gui() } }} />
