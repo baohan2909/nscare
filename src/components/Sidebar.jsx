@@ -6,7 +6,7 @@ import { IcDash, IcPhone, IcUser, IcChart, IcForm, IcGear, IcChevL, IcOut, IcDow
 const NHOM = [
   { g: 'Chăm sóc', items: [
     { id: 'tq', nhan: 'Tổng quan', Ic: IcDash },
-    { id: 'hd', nhan: 'Hàng đợi chăm sóc', Ic: IcPhone, badgeKey: 'hangDoi' },
+    { id: 'hd', nhan: 'Chăm sóc khách hàng', Ic: IcPhone, badgeKey: 'hangDoi' },
     { id: 'kh', nhan: 'Khách hàng 360°', Ic: IcUser }
   ]},
   { g: 'Marketing', items: [
@@ -66,7 +66,7 @@ export default function Sidebar({ man, setMan, badges = {} }) {
       <div className="side-logo">
         <div className="mark">NS</div>
         <div className="tx"><div className="t">NS CARE</div>
-          <div className="s">Chăm sóc sau mua</div>
+          <div className="s">Chăm sóc khách hàng</div>
           <div className="ver">v{APP_VERSION}</div></div>
       </div>
 

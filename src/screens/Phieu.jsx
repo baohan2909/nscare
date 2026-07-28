@@ -111,7 +111,7 @@ export default function Phieu({ phieuId, quayLai }) {
 
   return (
     <>
-      <div className="back" onClick={quayLai}><IcChevL size={16} />Hàng đợi chăm sóc</div>
+      <div className="back" onClick={quayLai}><IcChevL size={16} />Chăm sóc khách hàng</div>
       <div className="phieu-grid">
         {/* ===== Cột trái: khảo sát + ý kiến ===== */}
         <div>

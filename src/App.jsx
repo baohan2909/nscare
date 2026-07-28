@@ -23,7 +23,7 @@ import CauHinhAI from './screens/CauHinhAI'
 const NGAY = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })
 const META = {
   tq: ['Tổng quan', 'Chăm sóc khách hàng sau mua · ' + NGAY],
-  hd: ['Hàng đợi chăm sóc', 'Danh sách phiếu cần liên hệ'],
+  hd: ['Chăm sóc khách hàng', 'Danh sách phiếu cần liên hệ'],
   phieu: ['Phiếu chăm sóc', 'Thực hiện khảo sát khách hàng'],
   kh: ['Khách hàng 360°', 'Toàn bộ lịch sử mua & chăm sóc'],
   pt: ['Phân tích ý kiến', 'Tổng hợp ý kiến khách theo dòng sản phẩm'],
