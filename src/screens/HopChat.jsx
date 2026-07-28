@@ -126,7 +126,16 @@ export default function HopChat() {
     return () => { supabase.removeChannel(ch); clearInterval(bo) }
   }, [napDs])
 
-  useEffect(() => { if (cuonRef.current) cuonRef.current.scrollTop = cuonRef.current.scrollHeight }, [tin, taiTin])
+  const oDayRef = useRef(true)
+  useEffect(() => {
+    if (oDayRef.current && cuonRef.current) cuonRef.current.scrollTop = cuonRef.current.scrollHeight
+  }, [tin, taiTin])
+  function onCuon(e) {
+    const el = e.currentTarget
+    oDayRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 90
+  }
+  // khi mở hội thoại mới thì luôn về đáy
+  useEffect(() => { oDayRef.current = true }, [chon?.id])
 
   // Nạp lại tin của hội thoại đang mở mỗi 8s — bảo đảm tin AI/OA/anh gửi đều hiện
   // kể cả khi realtime chưa kịp đẩy về.
@@ -278,8 +287,8 @@ export default function HopChat() {
           </div>}
 
         {laQuyen('quan_ly') &&
-          <div className="ai-truc">
-            <span className="ai-truc-ic"><IcRobot size={17} /></span>
+          <div className={'ai-truc' + (ai.ai_tu_dong ? ' on' : '')}>
+            <span className={'ai-truc-ic' + (ai.ai_tu_dong ? ' song' : '')}><IcSpark size={16} /></span>
             <div className="ai-truc-tx"><b>NS AI trực chat</b>
               <span>{ai.ai_tu_dong ? 'Đang tự trả lời khách chưa có người nhận' : 'Đang tắt — khách chờ nhân viên'}</span></div>
             <button className={'switch' + (ai.ai_tu_dong ? ' on' : '')} onClick={batTatAIToanCuc}
@@ -298,7 +307,7 @@ export default function HopChat() {
                     {h.chua_doc > 0 && <span className="cdi-dot">{h.chua_doc}</span>}</div>
                   <div className="cdi-tin">{h.tin_cuoi || '—'}</div>
                   <div className="cdi-meta-row">
-                    {ai.ai_tu_dong && !h.ai_tat && !h.phu_trach && <span className="cdi-ai-badge"><IcRobot size={10} /> AI đang trực</span>}
+                    {ai.ai_tu_dong && !h.ai_tat && !h.phu_trach && <span className="cdi-ai-badge"><span className="cham-song" /> AI đang trực</span>}
                     {h.phu_trach && <span className="cdi-nv-badge">{h.phu_trach === user?.ma_nv ? 'Tôi phụ trách' : (h.phu_trach_ten || h.phu_trach)}</span>}
                     {(h.nhan || []).slice(0, 2).map(nh => {
                       const t = theDs.find(x => x.ten === nh)
@@ -318,12 +327,12 @@ export default function HopChat() {
       {!chon ? (
         <div className="chat-rong"><IcChat size={44} /><p>Chọn một hội thoại để bắt đầu</p></div>
       ) : (
-        <div className="chat-main">
+        <div className={'chat-main' + (ai.ai_tu_dong && !chon.ai_tat && !chon.phu_trach ? ' ai-dang-truc' : '')}>
           <div className="chat-main-dau">
             {chon.avatar_url ? <img className="cmd-av anh" src={chon.avatar_url} alt="" />
               : <div className="cmd-av">{tenKH(chon).replace('Khách #', 'K').slice(0, 1).toUpperCase()}</div>}
             <div className="cmd-info">
-              <b className="cmd-ten">{tenKH(chon)}
+              <b className="cmd-ten"><span className="cmd-ten-tx">{tenKH(chon)}</span>
                 <button className="cmd-sua" title="Sửa tên / gắn SĐT"
                   onClick={() => setSuaKh({ ten: chon.ten || '', sdt: chon.sdt || '', dang: false })}><IcPen size={13} /></button>
                 <button className="cmd-sua" title="Lấy lại tên + ảnh từ Zalo" onClick={() => layTen(chon.id, false)}>↻</button></b>
@@ -341,9 +350,10 @@ export default function HopChat() {
                   <option value="">Chuyển NV…</option>
                   {nvDs.map(n => <option key={n.ma_nv} value={n.ma_nv}>{n.ten}</option>)}
                 </select>}
-              <button className={'nut-ai-ht' + ((chon.ai_tat || !ai.ai_tu_dong || chon.phu_trach) ? ' off' : '')} onClick={batTatAIHt}
-                title={!ai.ai_tu_dong ? 'AI tổng đang tắt (bật ở Cấu hình AI). Bấm để chuẩn bị cho hội thoại này' : chon.phu_trach ? 'Hội thoại đã có người phụ trách nên AI không tự trả lời' : chon.ai_tat ? 'AI đang TẮT ở hội thoại này — bấm để AI tự trả lời' : 'AI đang TRỰC hội thoại này — bấm để tắt, tự trả lời'}>
-                <IcRobot size={14} /> {chon.ai_tat ? 'AI: tắt' : (ai.ai_tu_dong && !chon.phu_trach) ? 'AI: trực' : 'AI: nghỉ'}</button>
+              <button className={'nut-ai-ht ' + (chon.ai_tat ? 'tat' : (ai.ai_tu_dong && !chon.phu_trach) ? 'truc' : 'nghi')} onClick={batTatAIHt}
+                title={!ai.ai_tu_dong ? 'AI tổng đang tắt (bật ở Cấu hình AI)' : chon.phu_trach ? 'Hội thoại đã có người phụ trách nên AI không tự trả lời' : chon.ai_tat ? 'AI đang TẮT ở hội thoại này — bấm để AI tự trả lời' : 'AI đang TRỰC hội thoại này — bấm để tắt, tự trả lời'}>
+                {(ai.ai_tu_dong && !chon.ai_tat && !chon.phu_trach) ? <span className="cham-song" /> : <IcSpark size={13} />}
+                {chon.ai_tat ? 'AI: tắt' : (ai.ai_tu_dong && !chon.phu_trach) ? 'AI đang trực' : 'AI: nghỉ'}</button>
               {chon.phu_trach !== user?.ma_nv && <button className="btn-mini" onClick={nhanVe}>Nhận về tôi</button>}
               {chon.sdt && <button className="btn-mini" onClick={moHoSo}><IcUser size={13} /> Hồ sơ</button>}
               <select className="cmd-tt" value={chon.trang_thai} onChange={e => doiTT(e.target.value)}>
@@ -351,6 +361,9 @@ export default function HopChat() {
               </select>
             </div>
           </div>
+
+          {ai.ai_tu_dong && !chon.ai_tat && !chon.phu_trach &&
+            <div className="ai-banner"><span className="cham-song" /> NS AI đang tự động trả lời hội thoại này — bấm <b>“AI đang trực”</b> để tắt và tự trả lời</div>}
 
           {panelThe && (
             <div className="the-panel">
@@ -364,28 +377,31 @@ export default function HopChat() {
           )}
 
           <div className="chat-than">
-            <div className="chat-tin" ref={cuonRef}>
+            <div className="chat-tin" ref={cuonRef} onScroll={onCuon}>
               {taiTin ? <Spinner /> : tin.map((t, i) => {
                 const truoc = tin[i - 1]
                 const ngayMoi = !truoc || String(t.tao_luc).slice(0, 10) !== String(truoc.tao_luc).slice(0, 10)
-                const dauCum = !truoc || truoc.chieu !== t.chieu || ngayMoi
+                const dauCum = !truoc || truoc.chieu !== t.chieu || truoc.nguoi_gui !== t.nguoi_gui || ngayMoi
+                const laAI = t.nguoi_gui === 'AI'
                 return (
                   <div key={t.id}>
                     {ngayMoi && <div className="ct-ngay"><span>{gioVN(t.tao_luc).slice(6)}</span></div>}
-                    {dauCum && t.chieu === 'den' &&
-                      <div className="ct-ten-kh">
-                        {chon.avatar_url ? <img className="ct-av" src={chon.avatar_url} alt="" /> : <span className="ct-av chu">{tenKH(chon).replace('Khách #', 'K').slice(0, 1)}</span>}
-                        <span>{tenKH(chon)}</span>
-                      </div>}
                     <div className={'ct-dong ' + (t.chieu === 'di' ? 'di' : 'den') + (dauCum ? ' dau' : '')}>
-                      <div className={'ct-bong' + (t.nguoi_gui === 'AI' ? ' ai' : '')}>
-                        {t.nguoi_gui === 'AI' && <span className="ct-ai-tag"><IcSpark size={11} /> NS AI</span>}
+                      {t.chieu === 'den' && (dauCum
+                        ? (chon.avatar_url ? <img className="ct-av" src={chon.avatar_url} alt="" /> : <span className="ct-av chu">{tenKH(chon).replace('Khách #', 'K').slice(0, 1)}</span>)
+                        : <span className="ct-av-spacer" />)}
+                      <div className={'ct-bong' + (laAI ? ' ai' : '')}>
+                        {laAI && <span className="ct-ai-tag"><IcSpark size={11} /> NS AI</span>}
                         {t.anh_url ? <a href={t.anh_url} target="_blank" rel="noreferrer"><img className="ct-anh" src={t.anh_url} alt="" /></a> : null}
                         {t.noi_dung}
                         <div className="ct-meta">{gioVN(t.tao_luc).slice(0, 5)}
-                          {t.chieu === 'di' && t.nguoi_gui === 'OA' ? ' · từ Zalo OA' : t.chieu === 'di' && t.nguoi_gui && t.nguoi_gui !== 'AI' ? ' · ' + t.nguoi_gui : ''}
+                          {t.chieu === 'di' && t.nguoi_gui === 'OA' ? ' · từ Zalo OA' : t.chieu === 'di' && !laAI && t.nguoi_gui ? ' · ' + t.nguoi_gui : ''}
                           {t.trang_thai === 'dang' ? ' · đang gửi…' : t.trang_thai === 'loi' ? ' · ⚠ lỗi' : ''}</div>
                       </div>
+                      {t.chieu === 'di' && (dauCum
+                        ? (laAI ? <span className="ct-av ai" title="NS AI"><IcSpark size={15} /></span>
+                            : <span className="ct-av nv" title={t.nguoi_gui || 'Nhân viên'}>{(t.nguoi_gui === 'OA' ? 'OA' : (t.nguoi_gui || 'NV')).slice(0, 2).toUpperCase()}</span>)
+                        : <span className="ct-av-spacer" />)}
                     </div>
                   </div>
                 )

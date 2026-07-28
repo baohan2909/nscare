@@ -794,3 +794,69 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .composer-khung{max-width:780px;margin:0 auto;background:#FBFAF8;border:1.5px solid #EBE7E0}
 .composer-khung:focus-within{border-color:var(--chat-teal-soft);box-shadow:0 0 0 3px rgba(63,182,168,.1)}
 .composer-gui{background:linear-gradient(135deg,var(--chat-navy),var(--chat-teal))}
+
+/* ═══════════ v3.6 — AVATAR TRÒN GLOW + AI VẬN HÀNH RÕ ═══════════ */
+/* avatar chung: LUÔN TRÒN, gradient, glow — kể cả không ảnh */
+.cmd-av,.cdi-av,.ct-av{border-radius:50% !important}
+.cmd-av{width:46px;height:46px;background:linear-gradient(135deg,#14213A,#1E5F63 65%,#3FB6A8);
+  color:#fff;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 3px rgba(63,182,168,.14),0 6px 16px rgba(20,33,58,.22);flex-shrink:0}
+.cmd-av.anh{object-fit:cover}
+.cdi-av{width:40px;height:40px;background:linear-gradient(135deg,#14213A,#3FB6A8);
+  color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(20,33,58,.16);flex-shrink:0}
+.cdi-av.anh{object-fit:cover}
+
+/* tin: avatar 2 bên, bong bóng ở giữa */
+.ct-dong{display:flex;align-items:flex-end;gap:8px;margin:1px 0}
+.ct-dong.den{justify-content:flex-start}
+.ct-dong.di{justify-content:flex-end}
+.ct-av{width:30px;height:30px;flex-shrink:0;object-fit:cover;
+  box-shadow:0 2px 7px rgba(20,33,58,.16)}
+.ct-av.chu{background:linear-gradient(135deg,#14213A,#3FB6A8);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+.ct-av.nv{background:linear-gradient(135deg,#14213A,#227C74);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;
+  box-shadow:0 0 0 2px rgba(34,124,116,.14),0 2px 7px rgba(20,33,58,.16)}
+.ct-av.ai{background:linear-gradient(135deg,#2E8B84,#3FB6A8);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 2px rgba(63,182,168,.22),0 3px 10px rgba(63,182,168,.35)}
+.ct-av-spacer{width:30px;flex-shrink:0}
+.ct-dong .ct-bong{margin:0}
+.ct-dong.dau{margin-top:12px}
+
+/* chấm sống nhấp nháy (thay icon robot xấu) */
+.cham-song{width:8px;height:8px;border-radius:50%;background:#3FB6A8;display:inline-block;flex-shrink:0;
+  box-shadow:0 0 0 0 rgba(63,182,168,.6);animation:song 1.6s infinite}
+@keyframes song{0%{box-shadow:0 0 0 0 rgba(63,182,168,.55)}70%{box-shadow:0 0 0 6px rgba(63,182,168,0)}100%{box-shadow:0 0 0 0 rgba(63,182,168,0)}}
+
+/* thẻ NS AI cột trái — icon sparkle (không robot), khi BẬT thì sáng teal */
+.ai-truc-ic{width:34px;height:34px;border-radius:11px;background:#EEF1F0;color:#9AA5A3;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.ai-truc.on .ai-truc-ic.song{background:linear-gradient(135deg,#2E8B84,#3FB6A8);color:#fff;
+  box-shadow:0 0 0 3px rgba(63,182,168,.16),0 4px 12px rgba(63,182,168,.3)}
+.ai-truc.on{border-color:#BEE6DF;background:linear-gradient(135deg,#F3FBF9,#EAF7F4)}
+
+/* badge AI danh sách — chấm sống + chữ, không robot */
+.cdi-ai-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;
+  color:#1E5F63;background:#E4F5F1;border:1px solid #C4E8E1;border-radius:8px;padding:2px 8px}
+
+/* NÚT AI header — 3 trạng thái đẹp */
+.nut-ai-ht{display:inline-flex;align-items:center;gap:6px;height:34px;border-radius:10px;
+  font-size:12.5px;font-weight:700;padding:0 12px;cursor:pointer;border:1px solid;transition:all .18s}
+.nut-ai-ht.truc{background:linear-gradient(135deg,#2E8B84,#3FB6A8);color:#fff;border-color:transparent;
+  box-shadow:0 3px 12px rgba(63,182,168,.34)}
+.nut-ai-ht.tat{background:#fff;color:#B06A4A;border-color:#EAD8CF}
+.nut-ai-ht.nghi{background:#F6F4F0;color:#A9A49B;border-color:#ECE8E1}
+
+/* BANNER AI đang vận hành — dải teal nổi bật trên khung tin */
+.ai-banner{display:flex;align-items:center;gap:8px;padding:9px 20px;font-size:12.5px;font-weight:600;
+  color:#12564F;background:linear-gradient(90deg,#E4F5F1,#F3FBF9);border-bottom:1px solid #CBE9E3}
+.ai-banner b{color:#0E6B62}
+/* khi AI đang trực: viền khung chat sáng teal để "thấy có AI vận hành" */
+.chat-main.ai-dang-truc{box-shadow:inset 0 0 0 2px rgba(63,182,168,.28)}
+
+/* header tên KHÔNG rớt dòng */
+.cmd-info{min-width:0;flex:1}
+.cmd-ten{display:flex;align-items:center;gap:7px}
+.cmd-ten-tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
