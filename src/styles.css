@@ -717,7 +717,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
   background:linear-gradient(180deg,#FBFAF8 0%,#F7F5F1 100%);
   padding:22px 22px 8px}
 /* wrapper căn giữa nội dung, tin dùng đủ bề rộng */
-.chat-tin-in{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:2px}
+.chat-tin-in{width:100%;max-width:1080px;margin:0 auto;align-self:stretch;display:flex;flex-direction:column;gap:2px}
 
 /* LỖI 4 — thanh tên khách: nổi bật, sang, mềm */
 .chat-main-dau{
