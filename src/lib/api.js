@@ -146,6 +146,8 @@ export const api = {
     p_ids: ids, p_hanh_dong: hanh_dong, p_bai_hoc_sua: bai_hoc_sua || null }),
   hocDangApDung: () => rpc('fn_hoc_dang_ap_dung', {}),
   hocMoKhoa: () => rpc('fn_hoc_mo_khoa', {}),
+  hocCamNang: () => rpc('fn_hoc_cam_nang', {}),
+  hocCnLamLai: () => rpc('fn_hoc_cn_lam_lai', {}),
 
   htCauHinh: () => rpc('fn_ht_cau_hinh', {}),
   htCauHinhLuu: (p) => rpc('fn_ht_cau_hinh_luu', { p }),

@@ -24,6 +24,8 @@ export default function HocTap() {
   const dungRef = useRef(false)
   const [modal, setModal] = useState(null)    // 'cauhinh' | {sua: bài}
   const [apDung, setApDung] = useState(null)  // tab đang áp dụng
+  const [camNang, setCamNang] = useState(null)   // cẩm nang đã chưng cất
+  const [dangCC, setDangCC] = useState(null)     // tiến trình chưng cất
   const [tab, setTab] = useState('duyet')
   const [toast, setToast] = useState(null)
 
@@ -92,6 +94,51 @@ export default function HocTap() {
         ? 'Không gọi được máy chủ học tập — kiểm tra đã up zalooa bản mới và Redeploy chưa' : e.message, kind: 'err' })
     }
     setChay(null); nap()
+  }
+
+  async function moCamNang() {
+    setTab('xuat')
+    try { setCamNang(await api.hocCamNang()) } catch (e) { setToast({ msg: e.message, kind: 'err' }) }
+  }
+
+  async function chungCat(lamLai) {
+    setDangCC({ nhom: 0 })
+    try {
+      if (lamLai) await api.hocCnLamLai()
+      let tongNhom = 0
+      for (let i = 0; i < 40; i++) {
+        const r = await fetch(ZALO_GW_URL + '/hoc-chungcat', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: layToken() || '' })
+        })
+        const j = await r.json().catch(() => ({}))
+        if (j.loi) { setToast({ msg: 'Lỗi: ' + String(j.loi).slice(0, 140), kind: 'err' }); break }
+        tongNhom += j.so_nhom || 0
+        setDangCC({ nhom: tongNhom, con: j.con_nhom })
+        if (j.xong || !j.con_nhom) break
+      }
+      setCamNang(await api.hocCamNang())
+      setToast({ msg: 'Đã chưng cất xong cẩm nang' })
+    } catch (e) {
+      setToast({ msg: /Failed to fetch/i.test(e.message) ? 'Không gọi được máy chủ — kiểm tra đã up zalooa mới chưa' : e.message, kind: 'err' })
+    }
+    setDangCC(null)
+  }
+
+  function saoChep() {
+    const t = camNang?.noi_dung || ''
+    if (!t) return
+    navigator.clipboard.writeText(t)
+      .then(() => setToast({ msg: 'Đã sao chép - dán thẳng vào Nhanh.vn được rồi anh' }))
+      .catch(() => setToast({ msg: 'Trình duyệt chặn sao chép, anh bôi đen rồi Ctrl+C', kind: 'err' }))
+  }
+
+  function taiFile() {
+    const t = camNang?.noi_dung || ''
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(new Blob([t], { type: 'text/plain;charset=utf-8' }))
+    a.download = 'Cam_nang_tu_van_Non_Son.txt'
+    a.click()
   }
 
   async function moKhoa() {
@@ -197,9 +244,44 @@ export default function HocTap() {
         <button className={tab === 'apdung' ? 'on' : ''} onClick={() => setTab('apdung')}>
           Đang áp dụng ({(tq?.nen_dang_ap || 0) + (tq?.tranh_dang_ap || 0)})
         </button>
+        <button className={tab === 'xuat' ? 'on' : ''} onClick={moCamNang}>Xuất trí tuệ</button>
       </div>
 
-      {tab === 'apdung' ? (
+      {tab === 'xuat' ? (
+        <div className="hoc-xuat">
+          <div className="hoc-xuat-top">
+            <div>
+              <h3>Cẩm nang đúc kết</h3>
+              <p>Gộp toàn bộ bài học đã duyệt thành cẩm nang cô đọng - dán thẳng vào chatbot Nhanh.vn.</p>
+              <p className="hoc-xuat-so">
+                {camNang?.bai_duyet || 0} bài đã duyệt · {camNang?.nhom_xong || 0} nhóm đã đúc kết
+                {camNang?.nhom_con > 0 ? ` · còn ${camNang.nhom_con} nhóm chưa làm` : ''}
+                {camNang?.tao_luc ? ` · cập nhật ${new Date(camNang.tao_luc).toLocaleString('vi-VN')}` : ''}
+              </p>
+            </div>
+            <div className="hoc-nut">
+              {dangCC
+                ? <span className="hoc-prog"><span><IcRefresh size={16} className="quay" /> Đang đúc kết {dangCC.nhom} nhóm{dangCC.con ? ` · còn ${dangCC.con}` : ''}…</span></span>
+                : <>
+                    <button className="btn-ai" onClick={() => chungCat(false)}><IcSpark size={16} /> Đúc kết cẩm nang</button>
+                    <button className="btn-ghost" onClick={() => chungCat(true)}>Làm lại từ đầu</button>
+                  </>}
+            </div>
+          </div>
+
+          {camNang?.noi_dung ? (
+            <>
+              <div className="hoc-xuat-act">
+                <button className="btn-ai" onClick={saoChep}>Sao chép toàn bộ</button>
+                <button className="btn-ghost" onClick={taiFile}>Tải file .txt</button>
+              </div>
+              <pre className="hoc-camnang">{camNang.noi_dung}</pre>
+            </>
+          ) : (
+            <p className="hoc-trong">Chưa có cẩm nang. Bấm "Đúc kết cẩm nang" để AI gộp toàn bộ bài học đã duyệt.</p>
+          )}
+        </div>
+      ) : tab === 'apdung' ? (
         <div className="hoc-ap">
           <div className="hoc-ap-col">
             <h3 className="nen">NÊN LÀM ({apDung?.nen?.length || 0})</h3>

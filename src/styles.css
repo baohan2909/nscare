@@ -1038,3 +1038,16 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .hoc-prog{flex-direction:column;align-items:flex-start;gap:7px}
 .hoc-prog>span{display:inline-flex;align-items:center;gap:7px}
 .hoc-prog .btn-ghost{height:32px;font-size:12px}
+
+/* ---- Tab XUẤT TRÍ TUỆ ---- */
+.hoc-xuat{display:flex;flex-direction:column;gap:14px}
+.hoc-xuat-top{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px 18px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+  flex-wrap:wrap;box-shadow:var(--shadow)}
+.hoc-xuat-top h3{font-size:16px;font-weight:800;color:var(--ink)}
+.hoc-xuat-top p{margin:4px 0 0;font-size:12.5px;color:var(--ink-2);max-width:520px;line-height:1.5}
+.hoc-xuat-so{font-weight:600;color:var(--teal-deep) !important}
+.hoc-xuat-act{display:flex;gap:9px;flex-wrap:wrap}
+.hoc-camnang{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px 20px;font-family:var(--font);font-size:13.5px;line-height:1.7;color:var(--ink);
+  white-space:pre-wrap;word-break:break-word;max-height:620px;overflow-y:auto;box-shadow:var(--shadow);margin:0}
