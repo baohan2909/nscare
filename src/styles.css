@@ -1032,3 +1032,4 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
   .hoc-ap{grid-template-columns:1fr}
   .hoc-head{flex-direction:column;align-items:flex-start}
 }
+.hoc-loi{color:#B3403F;font-weight:600;line-height:1.45;max-width:340px;word-break:break-word}

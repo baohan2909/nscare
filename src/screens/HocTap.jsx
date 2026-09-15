@@ -20,6 +20,7 @@ export default function HocTap() {
   const [moDc, setMoDc] = useState(null)      // id đang mở dẫn chứng
   const [tinDc, setTinDc] = useState({})      // cache tin hội thoại
   const [chay, setChay] = useState(null)      // tiến trình học ngay
+  const [loiCuoi, setLoiCuoi] = useState(null) // lỗi lượt chạy gần nhất
   const [modal, setModal] = useState(null)    // 'cauhinh' | {sua: bài}
   const [apDung, setApDung] = useState(null)  // tab đang áp dụng
   const [tab, setTab] = useState('duyet')
@@ -48,8 +49,8 @@ export default function HocTap() {
 
   async function hocNgay() {
     if (!cf?.bat) { setToast({ msg: 'Bật học tập trước đã anh nhé', kind: 'err' }); return }
-    setChay({ dang: true, cham: 0, bai: 0 })
-    let tongCham = 0, tongBai = 0
+    setChay({ dang: true, cham: 0, bai: 0 }); setLoiCuoi(null)
+    let tongCham = 0, tongBai = 0, loiGom = null, ungVien = 0
     try {
       for (let i = 0; i < 12; i++) {
         const r = await fetch(ZALO_GW_URL + '/hoc-runner?nguon=tay', {
@@ -60,11 +61,22 @@ export default function HocTap() {
         if (j.loi === 'KHONG_CO_QUYEN') { setToast({ msg: 'Phiên hết hạn hoặc không đủ quyền — đăng nhập lại giúp em', kind: 'err' }); break }
         if (j.chay === false) { setToast({ msg: j.ly_do === 'TAT' ? 'Học tập đang tắt' : 'Một lượt khác đang chạy', kind: 'err' }); break }
         tongCham += j.so_cham || 0; tongBai += j.so_bai_moi || 0
+        ungVien = j.ung_vien ?? ungVien
         setChay({ dang: true, cham: tongCham, bai: tongBai, con: j.con_lai })
-        if (j.loi) setToast({ msg: 'Có lỗi: ' + String(j.loi).slice(0, 120), kind: 'err' })
+        if (j.loi) loiGom = String(j.loi)
         if (!j.con_lai || (j.so_cham || 0) === 0) break
       }
-      setToast({ msg: `Xong: chấm ${tongCham} hội thoại, ${tongBai} bài học mới` })
+      if (loiGom) {
+        setLoiCuoi(loiGom)
+        setToast({ msg: 'Chạy xong nhưng có lỗi — xem chi tiết bên dưới nút Học ngay', kind: 'err' })
+      } else if (tongCham === 0) {
+        setLoiCuoi(ungVien === 0
+          ? 'Không tìm được hội thoại hợp lệ. Thử hạ "Khách im bao lâu thì coi là kết thúc" trong Cấu hình.'
+          : `Lấy được ${ungVien} hội thoại nhưng chưa chấm được ca nào.`)
+        setToast({ msg: 'Chưa chấm được ca nào — xem chi tiết bên dưới', kind: 'err' })
+      } else {
+        setToast({ msg: `Xong: chấm ${tongCham} hội thoại, ${tongBai} bài học mới` })
+      }
     } catch (e) {
       setToast({ msg: /Failed to fetch|NetworkError/i.test(e.message)
         ? 'Không gọi được máy chủ học tập — kiểm tra đã up zalooa bản mới và Redeploy chưa' : e.message, kind: 'err' })
@@ -131,6 +143,7 @@ export default function HocTap() {
             ? <div className="hoc-prog"><IcRefresh size={16} className="quay" /> Đang chấm… {chay.cham} hội thoại · {chay.bai} bài</div>
             : <button className="btn-ai" onClick={hocNgay}><IcSpark size={16} /> Học ngay</button>}
           <div className="hoc-lo">
+            {loiCuoi && <span className="hoc-loi">{loiCuoi}</span>}
             {tq?.con_cho_cham > 0 && <span>{tq.con_cho_cham} hội thoại chờ chấm</span>}
             {tq?.lo_cuoi && <span>Lượt gần nhất: {tq.lo_cuoi.so_cham} ca · {tq.lo_cuoi.so_bai_moi} bài</span>}
           </div>
