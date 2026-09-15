@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { api } from '../lib/api'
 import { ZALO_GW_URL } from '../lib/config'
+import { layToken } from '../lib/session'
 import { Toast } from '../components/ui'
 import { IcSpark, IcCheck, IcGear, IcChevD, IcRefresh } from '../components/Icons'
 
@@ -51,8 +52,12 @@ export default function HocTap() {
     let tongCham = 0, tongBai = 0
     try {
       for (let i = 0; i < 12; i++) {
-        const r = await fetch(ZALO_GW_URL + '/hoc-runner?nguon=tay', { method: 'POST' })
+        const r = await fetch(ZALO_GW_URL + '/hoc-runner?nguon=tay', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: layToken() || '' })
+        })
         const j = await r.json().catch(() => ({}))
+        if (j.loi === 'KHONG_CO_QUYEN') { setToast({ msg: 'Phiên hết hạn hoặc không đủ quyền — đăng nhập lại giúp em', kind: 'err' }); break }
         if (j.chay === false) { setToast({ msg: j.ly_do === 'TAT' ? 'Học tập đang tắt' : 'Một lượt khác đang chạy', kind: 'err' }); break }
         tongCham += j.so_cham || 0; tongBai += j.so_bai_moi || 0
         setChay({ dang: true, cham: tongCham, bai: tongBai, con: j.con_lai })
@@ -60,7 +65,10 @@ export default function HocTap() {
         if (!j.con_lai || (j.so_cham || 0) === 0) break
       }
       setToast({ msg: `Xong: chấm ${tongCham} hội thoại, ${tongBai} bài học mới` })
-    } catch (e) { setToast({ msg: e.message, kind: 'err' }) }
+    } catch (e) {
+      setToast({ msg: /Failed to fetch|NetworkError/i.test(e.message)
+        ? 'Không gọi được máy chủ học tập — kiểm tra đã up zalooa bản mới và Redeploy chưa' : e.message, kind: 'err' })
+    }
     setChay(null); nap()
   }
 
