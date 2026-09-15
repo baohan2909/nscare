@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { api } from '../lib/api'
 import { ZALO_GW_URL } from '../lib/config'
 import { layToken } from '../lib/session'
@@ -21,6 +21,7 @@ export default function HocTap() {
   const [tinDc, setTinDc] = useState({})      // cache tin hội thoại
   const [chay, setChay] = useState(null)      // tiến trình học ngay
   const [loiCuoi, setLoiCuoi] = useState(null) // lỗi lượt chạy gần nhất
+  const dungRef = useRef(false)
   const [modal, setModal] = useState(null)    // 'cauhinh' | {sua: bài}
   const [apDung, setApDung] = useState(null)  // tab đang áp dụng
   const [tab, setTab] = useState('duyet')
@@ -50,9 +51,11 @@ export default function HocTap() {
   async function hocNgay() {
     if (!cf?.bat) { setToast({ msg: 'Bật học tập trước đã anh nhé', kind: 'err' }); return }
     setChay({ dang: true, cham: 0, bai: 0 }); setLoiCuoi(null)
+    dungRef.current = false
     let tongCham = 0, tongBai = 0, loiGom = null, ungVien = 0, vung = ''
     try {
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 400; i++) {
+        if (dungRef.current) { setToast({ msg: `Đã dừng: chấm ${tongCham} hội thoại, ${tongBai} bài học` }); break }
         const r = await fetch(ZALO_GW_URL + '/hoc-runner?nguon=tay', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token: layToken() || '' })
@@ -64,7 +67,8 @@ export default function HocTap() {
         ungVien = j.ung_vien ?? ungVien; if (j.vung) vung = j.vung
         setChay({ dang: true, cham: tongCham, bai: tongBai, con: j.con_lai })
         if (j.loi) loiGom = String(j.loi)
-        if (!j.con_lai || (j.so_cham || 0) === 0) break
+        if (!j.con_lai) break
+        if ((j.so_cham || 0) === 0 && !j.het_gio) break   // không tiến triển -> dừng, tránh lặp vô ích
       }
       if (loiGom) {
         setLoiCuoi(loiGom + (vung ? ` · vùng chạy: ${vung}` : ''))
@@ -155,7 +159,10 @@ export default function HocTap() {
         <div className="hoc-stat tb"><b>{tq?.that_bai ?? 0}</b><span>Ca thất bại</span></div>
         <div className="hoc-run">
           {chay?.dang
-            ? <div className="hoc-prog"><IcRefresh size={16} className="quay" /> Đang chấm… {chay.cham} hội thoại · {chay.bai} bài</div>
+            ? <div className="hoc-prog">
+                <span><IcRefresh size={16} className="quay" /> Đã chấm {chay.cham} · {chay.bai} bài{chay.con != null ? ` · còn ${chay.con}` : ''}</span>
+                <button className="btn-ghost" onClick={() => { dungRef.current = true }}>Dừng</button>
+              </div>
             : <div className="hoc-nut">
                 <button className="btn-ai" onClick={hocNgay}><IcSpark size={16} /> Học ngay</button>
                 <button className="btn-ghost" onClick={kiemTraAI}>Kiểm tra AI</button>

@@ -1035,3 +1035,6 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .hoc-loi{color:#B3403F;font-weight:600;line-height:1.45;max-width:340px;word-break:break-word}
 .hoc-nut{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .hoc-nut .btn-ghost{height:40px}
+.hoc-prog{flex-direction:column;align-items:flex-start;gap:7px}
+.hoc-prog>span{display:inline-flex;align-items:center;gap:7px}
+.hoc-prog .btn-ghost{height:32px;font-size:12px}
