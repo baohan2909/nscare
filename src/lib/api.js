@@ -148,6 +148,8 @@ export const api = {
   hocMoKhoa: () => rpc('fn_hoc_mo_khoa', {}),
   hocCamNang: () => rpc('fn_hoc_cam_nang', {}),
   hocCnLamLai: () => rpc('fn_hoc_cn_lam_lai', {}),
+  hocXuatTongHop: (kemSp, kemMauCau) => rpc('fn_hoc_xuat_tong_hop', {
+    p_kem_sp: kemSp !== false, p_kem_mau_cau: kemMauCau !== false }),
 
   htCauHinh: () => rpc('fn_ht_cau_hinh', {}),
   htCauHinhLuu: (p) => rpc('fn_ht_cau_hinh_luu', { p }),

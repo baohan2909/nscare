@@ -26,6 +26,9 @@ export default function HocTap() {
   const [apDung, setApDung] = useState(null)  // tab đang áp dụng
   const [camNang, setCamNang] = useState(null)   // cẩm nang đã chưng cất
   const [dangCC, setDangCC] = useState(null)     // tiến trình chưng cất
+  const [kemSp, setKemSp] = useState(true)
+  const [kemMc, setKemMc] = useState(true)
+  const [banXuat, setBanXuat] = useState(null)   // bản tổng hợp đang xem
   const [tab, setTab] = useState('duyet')
   const [toast, setToast] = useState(null)
 
@@ -125,8 +128,20 @@ export default function HocTap() {
     setDangCC(null)
   }
 
+  async function xuatTongHop() {
+    setDangCC({ nhom: 0, tong: true })
+    try {
+      const r = await api.hocXuatTongHop(kemSp, kemMc)
+      setBanXuat(r)
+      setToast({ msg: `Đã tạo bản tổng hợp (${Math.round((r.do_dai || 0) / 1000)} nghìn ký tự)` })
+    } catch (e) { setToast({ msg: e.message, kind: 'err' }) }
+    setDangCC(null)
+  }
+
+  function noiDungXuat() { return banXuat?.noi_dung || camNang?.noi_dung || '' }
+
   function saoChep() {
-    const t = camNang?.noi_dung || ''
+    const t = noiDungXuat()
     if (!t) return
     navigator.clipboard.writeText(t)
       .then(() => setToast({ msg: 'Đã sao chép - dán thẳng vào Nhanh.vn được rồi anh' }))
@@ -134,7 +149,7 @@ export default function HocTap() {
   }
 
   function taiFile() {
-    const t = camNang?.noi_dung || ''
+    const t = noiDungXuat()
     const a = document.createElement('a')
     a.href = URL.createObjectURL(new Blob([t], { type: 'text/plain;charset=utf-8' }))
     a.download = 'Cam_nang_tu_van_Non_Son.txt'
@@ -252,7 +267,11 @@ export default function HocTap() {
           <div className="hoc-xuat-top">
             <div>
               <h3>Cẩm nang đúc kết</h3>
-              <p>Gộp toàn bộ bài học đã duyệt thành cẩm nang cô đọng - dán thẳng vào chatbot Nhanh.vn.</p>
+              <p><b>Bản TỔNG HỢP</b> gồm đủ: nguyên tắc tư vấn, phong cách, tri thức nghiệp vụ, kiến thức sản phẩm, mẫu câu và bài học đúc kết - dán thẳng vào chatbot Nhanh.vn.</p>
+              <div className="hoc-tuychon">
+                <label><input type="checkbox" checked={kemSp} onChange={e => setKemSp(e.target.checked)} /> Kèm danh mục sản phẩm</label>
+                <label><input type="checkbox" checked={kemMc} onChange={e => setKemMc(e.target.checked)} /> Kèm mẫu câu trả lời</label>
+              </div>
               <p className="hoc-xuat-so">
                 {camNang?.bai_duyet || 0} bài đã duyệt · {camNang?.nhom_xong || 0} nhóm đã đúc kết
                 {camNang?.nhom_con > 0 ? ` · còn ${camNang.nhom_con} nhóm chưa làm` : ''}
@@ -261,21 +280,31 @@ export default function HocTap() {
             </div>
             <div className="hoc-nut">
               {dangCC
-                ? <span className="hoc-prog"><span><IcRefresh size={16} className="quay" /> Đang đúc kết {dangCC.nhom} nhóm{dangCC.con ? ` · còn ${dangCC.con}` : ''}…</span></span>
+                ? <span className="hoc-prog"><span><IcRefresh size={16} className="quay" /> {dangCC.tong ? 'Đang gom toàn bộ tri thức…' : `Đang đúc kết ${dangCC.nhom} nhóm${dangCC.con ? ` · còn ${dangCC.con}` : ''}…`}</span></span>
                 : <>
-                    <button className="btn-ai" onClick={() => chungCat(false)}><IcSpark size={16} /> Đúc kết cẩm nang</button>
-                    <button className="btn-ghost" onClick={() => chungCat(true)}>Làm lại từ đầu</button>
+                    <button className="btn-ai" onClick={xuatTongHop}><IcSpark size={16} /> Xuất bản TỔNG HỢP</button>
+                    <button className="btn-ghost" onClick={() => chungCat(false)}>Đúc kết bài học</button>
+                    <button className="btn-ghost" onClick={() => chungCat(true)}>Đúc lại từ đầu</button>
                   </>}
             </div>
           </div>
 
-          {camNang?.noi_dung ? (
+          {banXuat?.noi_dung && (
+            <div className="hoc-xuat-tt">
+              Bản tổng hợp: {Math.round((banXuat.do_dai || 0) / 1000)} nghìn ký tự
+              {banXuat.so_sp ? ` · ${banXuat.so_sp} sản phẩm` : ''}
+              {banXuat.so_bai_hoc ? ` · ${banXuat.so_bai_hoc} bài học` : ''}
+              {banXuat.co_quy_tac ? ' · có quy tắc' : ''}
+              {banXuat.co_tri_thuc ? ' · có tri thức nghiệp vụ' : ''}
+            </div>
+          )}
+          {noiDungXuat() ? (
             <>
               <div className="hoc-xuat-act">
                 <button className="btn-ai" onClick={saoChep}>Sao chép toàn bộ</button>
                 <button className="btn-ghost" onClick={taiFile}>Tải file .txt</button>
               </div>
-              <pre className="hoc-camnang">{camNang.noi_dung}</pre>
+              <pre className="hoc-camnang">{noiDungXuat()}</pre>
             </>
           ) : (
             <p className="hoc-trong">Chưa có cẩm nang. Bấm "Đúc kết cẩm nang" để AI gộp toàn bộ bài học đã duyệt.</p>
