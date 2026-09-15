@@ -62,7 +62,13 @@ export default function HocTap() {
         })
         const j = await r.json().catch(() => ({}))
         if (j.loi === 'KHONG_CO_QUYEN') { setToast({ msg: 'Phiên hết hạn hoặc không đủ quyền — đăng nhập lại giúp em', kind: 'err' }); break }
-        if (j.chay === false) { setToast({ msg: j.ly_do === 'TAT' ? 'Học tập đang tắt' : 'Một lượt khác đang chạy', kind: 'err' }); break }
+        if (j.chay === false) {
+          if (j.ly_do === 'TAT') { setLoiCuoi('Học tập đang TẮT — gạt công tắc "Bật học tập" ở trên.'); break }
+          // DANG_CHAY: lượt tự động đang chạy hoặc khóa còn kẹt -> chờ rồi thử lại
+          if (i < 3) { await new Promise(r => setTimeout(r, 3000)); continue }
+          setLoiCuoi('Một lượt khác đang chạy. Nếu kẹt lâu, bấm "Mở khóa" rồi thử lại.')
+          break
+        }
         tongCham += j.so_cham || 0; tongBai += j.so_bai_moi || 0
         ungVien = j.ung_vien ?? ungVien; if (j.vung) vung = j.vung
         setChay({ dang: true, cham: tongCham, bai: tongBai, con: j.con_lai })
@@ -75,7 +81,7 @@ export default function HocTap() {
         setToast({ msg: 'Chạy xong nhưng có lỗi — xem chi tiết bên dưới nút Học ngay', kind: 'err' })
       } else if (tongCham === 0) {
         setLoiCuoi(ungVien === 0
-          ? 'Không tìm được hội thoại hợp lệ. Thử hạ "Khách im bao lâu thì coi là kết thúc" trong Cấu hình.'
+          ? 'Lượt này không lấy được hội thoại nào. Nếu còn ca chờ chấm, thử bấm "Mở khóa" rồi chạy lại.'
           : `Lấy được ${ungVien} hội thoại nhưng chưa chấm được ca nào.`)
         setToast({ msg: 'Chưa chấm được ca nào — xem chi tiết bên dưới', kind: 'err' })
       } else {
@@ -86,6 +92,11 @@ export default function HocTap() {
         ? 'Không gọi được máy chủ học tập — kiểm tra đã up zalooa bản mới và Redeploy chưa' : e.message, kind: 'err' })
     }
     setChay(null); nap()
+  }
+
+  async function moKhoa() {
+    try { await api.hocMoKhoa(); setLoiCuoi('Đã mở khóa, bấm Học ngay lại.'); nap() }
+    catch (e) { setToast({ msg: e.message, kind: 'err' }) }
   }
 
   async function kiemTraAI() {
@@ -147,6 +158,10 @@ export default function HocTap() {
             <span>Tự động mỗi đêm</span>
             <button className={'sw' + (cf?.tu_dong ? ' on' : '')} onClick={() => luuCf({ tu_dong: !cf.tu_dong })} />
           </div>
+          <div className="hoc-sw-box">
+            <span>Tự duyệt</span>
+            <button className={'sw' + (cf?.tu_duyet ? ' on' : '')} onClick={() => luuCf({ tu_duyet: !cf.tu_duyet })} />
+          </div>
           <button className="btn-hd" onClick={() => setModal('cauhinh')}><IcGear size={16} /> Cấu hình</button>
         </div>
       </div>
@@ -166,6 +181,7 @@ export default function HocTap() {
             : <div className="hoc-nut">
                 <button className="btn-ai" onClick={hocNgay}><IcSpark size={16} /> Học ngay</button>
                 <button className="btn-ghost" onClick={kiemTraAI}>Kiểm tra AI</button>
+                <button className="btn-ghost" onClick={moKhoa}>Mở khóa</button>
               </div>}
           <div className="hoc-lo">
             {loiCuoi && <span className="hoc-loi">{loiCuoi}</span>}
@@ -230,7 +246,7 @@ export default function HocTap() {
                 {b.diem != null && <span className="hoc-diem">{b.diem}/10</span>}
                 {b.chu_de && <span className="hoc-cd">{CHU_DE[b.chu_de] || b.chu_de}</span>}
                 <span className={'kenh-chip ' + (b.kenh === 'facebook' ? 'fb' : 'za')}>{b.kenh === 'facebook' ? 'Facebook' : 'Zalo'}</span>
-                {b.trang_thai === 'da_duyet' && <span className="hoc-dd"><IcCheck size={13} /> Đã duyệt</span>}
+                {b.trang_thai === 'da_duyet' && <span className="hoc-dd"><IcCheck size={13} /> {b.ai_tu_duyet ? 'AI tự duyệt' : 'Đã duyệt'}</span>}
                 {b.trang_thai === 'bo' && <span className="hoc-bo">Đã bỏ</span>}
                 {b.da_sua && <span className="hoc-sua-tag">đã sửa</span>}
               </div>
@@ -290,7 +306,7 @@ export default function HocTap() {
               <option value="claude-haiku-4-5">Claude Haiku 4.5 — rẻ hơn, chấm nông hơn</option>
             </select>
             <label>Số hội thoại mỗi lượt: {cf.so_ht_moi_luot}</label>
-            <input type="range" min="2" max="12" value={cf.so_ht_moi_luot || 6}
+            <input type="range" min="2" max="40" value={cf.so_ht_moi_luot || 20}
               onChange={e => setCf(s => ({ ...s, so_ht_moi_luot: +e.target.value }))}
               onMouseUp={e => luuCf({ so_ht_moi_luot: +e.target.value })}
               onTouchEnd={e => luuCf({ so_ht_moi_luot: +e.target.value })} />
