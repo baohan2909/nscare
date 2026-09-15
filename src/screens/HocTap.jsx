@@ -50,7 +50,7 @@ export default function HocTap() {
   async function hocNgay() {
     if (!cf?.bat) { setToast({ msg: 'Bật học tập trước đã anh nhé', kind: 'err' }); return }
     setChay({ dang: true, cham: 0, bai: 0 }); setLoiCuoi(null)
-    let tongCham = 0, tongBai = 0, loiGom = null, ungVien = 0
+    let tongCham = 0, tongBai = 0, loiGom = null, ungVien = 0, vung = ''
     try {
       for (let i = 0; i < 12; i++) {
         const r = await fetch(ZALO_GW_URL + '/hoc-runner?nguon=tay', {
@@ -61,13 +61,13 @@ export default function HocTap() {
         if (j.loi === 'KHONG_CO_QUYEN') { setToast({ msg: 'Phiên hết hạn hoặc không đủ quyền — đăng nhập lại giúp em', kind: 'err' }); break }
         if (j.chay === false) { setToast({ msg: j.ly_do === 'TAT' ? 'Học tập đang tắt' : 'Một lượt khác đang chạy', kind: 'err' }); break }
         tongCham += j.so_cham || 0; tongBai += j.so_bai_moi || 0
-        ungVien = j.ung_vien ?? ungVien
+        ungVien = j.ung_vien ?? ungVien; if (j.vung) vung = j.vung
         setChay({ dang: true, cham: tongCham, bai: tongBai, con: j.con_lai })
         if (j.loi) loiGom = String(j.loi)
         if (!j.con_lai || (j.so_cham || 0) === 0) break
       }
       if (loiGom) {
-        setLoiCuoi(loiGom)
+        setLoiCuoi(loiGom + (vung ? ` · vùng chạy: ${vung}` : ''))
         setToast({ msg: 'Chạy xong nhưng có lỗi — xem chi tiết bên dưới nút Học ngay', kind: 'err' })
       } else if (tongCham === 0) {
         setLoiCuoi(ungVien === 0
@@ -82,6 +82,21 @@ export default function HocTap() {
         ? 'Không gọi được máy chủ học tập — kiểm tra đã up zalooa bản mới và Redeploy chưa' : e.message, kind: 'err' })
     }
     setChay(null); nap()
+  }
+
+  async function kiemTraAI() {
+    setLoiCuoi('Đang kiểm tra kết nối AI…')
+    try {
+      const r = await fetch(ZALO_GW_URL + '/hoc-runner?kiemtra=1', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: layToken() || '' })
+      })
+      const j = await r.json().catch(() => ({}))
+      if (j.ok) setLoiCuoi(`AI OK · vùng chạy: ${j.vung} · AI trả lời: "${j.tra_loi}"`)
+      else setLoiCuoi(`AI LỖI ${j.http || ''} · vùng chạy: ${j.vung || '?'} · ${j.loi || j.ly_do || 'không rõ'}`)
+    } catch (e) {
+      setLoiCuoi('Không gọi được máy chủ: ' + e.message)
+    }
   }
 
   async function duyetLo(hanh_dong, ids = chon, bai_hoc_sua = null) {
@@ -141,7 +156,10 @@ export default function HocTap() {
         <div className="hoc-run">
           {chay?.dang
             ? <div className="hoc-prog"><IcRefresh size={16} className="quay" /> Đang chấm… {chay.cham} hội thoại · {chay.bai} bài</div>
-            : <button className="btn-ai" onClick={hocNgay}><IcSpark size={16} /> Học ngay</button>}
+            : <div className="hoc-nut">
+                <button className="btn-ai" onClick={hocNgay}><IcSpark size={16} /> Học ngay</button>
+                <button className="btn-ghost" onClick={kiemTraAI}>Kiểm tra AI</button>
+              </div>}
           <div className="hoc-lo">
             {loiCuoi && <span className="hoc-loi">{loiCuoi}</span>}
             {tq?.con_cho_cham > 0 && <span>{tq.con_cho_cham} hội thoại chờ chấm</span>}
