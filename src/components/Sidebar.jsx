@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { APP_VERSION } from '../lib/config'
-import { IcDash, IcPhone, IcUser, IcChart, IcForm, IcGear, IcChevL, IcOut, IcDown, IcMega, IcSend } from './Icons'
+import { IcDash, IcPhone, IcUser, IcChart, IcForm, IcGear, IcChevL, IcOut, IcDown, IcMega, IcSend, IcSpark } from './Icons'
 
 const NHOM = [
   { g: 'Chăm sóc', items: [
@@ -23,6 +23,7 @@ const NHOM = [
   { g: 'Thiết lập', items: [
     { id: 'bo', nhan: 'Bộ câu hỏi', Ic: IcForm, min: 'quan_ly' },
     { id: 'chai', nhan: 'Cấu hình AI', Ic: IcMega, min: 'quan_ly' },
+    { id: 'hoc', nhan: 'AI Học tập', Ic: IcSpark, min: 'quan_ly' },
     { id: 'admin', nhan: 'Quản trị', Ic: IcGear, min: 'admin' }
   ]}
 ]

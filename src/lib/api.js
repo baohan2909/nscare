@@ -131,10 +131,21 @@ export const api = {
   },
   // ===== HỘP CHAT =====
   htDs: (loc, tim, the, kenh) => rpc('fn_ht_ds', { p_loc: loc, p_tim: tim || null, p_the: the || null, p_kenh: kenh || null }),
-  htTin: (ht) => rpc('fn_ht_tin', { p_ht: ht }),
+  htTin: (ht, gh) => rpc('fn_ht_tin', { p_ht: ht, ...(gh ? { p_gh: gh } : {}) }),
   htGan: (ht, ma_nv) => rpc('fn_ht_gan', { p_ht: ht, p_ma_nv: ma_nv || null }),
   htTrangThai: (ht, tt) => rpc('fn_ht_trang_thai', { p_ht: ht, p_tt: tt }),
   htMauCau: () => rpc('fn_ht_mau_cau', {}),
+  // --- Học tập ---
+  hocCauHinh: () => rpc('fn_hoc_cau_hinh', {}),
+  hocCauHinhLuu: (p) => rpc('fn_hoc_cau_hinh_luu', { p }),
+  hocTongQuan: () => rpc('fn_hoc_tong_quan', {}),
+  hocDs: (trang_thai, loai, chu_de, kenh, trang) => rpc('fn_hoc_ds', {
+    p_trang_thai: trang_thai || 'cho_duyet', p_loai: loai || null,
+    p_chu_de: chu_de || null, p_kenh: kenh || null, p_trang: trang || 1 }),
+  hocDuyet: (ids, hanh_dong, bai_hoc_sua) => rpc('fn_hoc_duyet', {
+    p_ids: ids, p_hanh_dong: hanh_dong, p_bai_hoc_sua: bai_hoc_sua || null }),
+  hocDangApDung: () => rpc('fn_hoc_dang_ap_dung', {}),
+
   htCauHinh: () => rpc('fn_ht_cau_hinh', {}),
   htCauHinhLuu: (p) => rpc('fn_ht_cau_hinh_luu', { p }),
   htAiTat: (ht, tat) => rpc('fn_ht_ai_tat', { p_ht: ht, p_tat: tat }),
