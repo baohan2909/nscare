@@ -1,8 +1,9 @@
+// zalooa v6.1 (15/09) - FIX Zalo khong tra loi: bo waitUntil, await truc tiep
 // NS CARE — Webhook Zalo v2 (Vercel Edge)
 // · Nhận follow/unfollow/tin nhắn -> ghi sự kiện + hộp chat
 // · Tự lấy TÊN + AVATAR Zalo của khách mới
 // · AI TRỰC CHAT: tự trả lời khi hội thoại CHƯA có nhân viên nhận (bật/tắt trong app)
-// · Trả 200 cho Zalo NGAY, việc nặng chạy nền (waitUntil)
+// · Xử lý XONG rồi mới trả 200 (waitUntil bị Vercel Edge hủy giữa chừng)
 export const config = { runtime: 'edge' };
 
 const SB_URL = process.env.SUPABASE_URL;
@@ -210,7 +211,7 @@ export default async function handler(req, context) {
               p_nguoi_gui: 'OA', p_trang_thai: 'da_gui', p_ma_loi: null, p_anh_url: null });
           } catch (e) { console.error('oa_send:', e?.message); }
         })();
-        if (context?.waitUntil) context.waitUntil(nen); else await nen;
+        await nen;
       }
       return Response.json({ ok: true });
     }
@@ -226,15 +227,13 @@ export default async function handler(req, context) {
         p_ten: null, p_kenh: 'zalo', p_mid: b.message?.msg_id || null
       });
       if (kq?.da_trung) return Response.json({ ok: true });   // Zalo gửi lại → bỏ qua
-      // việc nặng chạy NỀN — Zalo nhận 200 ngay
-      const nen = (async () => {
-        try {
-          const token = await zaloToken();
-          if (kq?.thieu_ten) await layTenZalo(uid, token);
-          if (kq?.ai_se_tra_loi) await aiTraLoi(kq.ht_id, uid, token);
-        } catch (e) { console.error('nen:', e?.message); }
-      })();
-      if (context?.waitUntil) context.waitUntil(nen); else await nen;
+      // AWAIT TRỰC TIẾP: Vercel Edge HỦY việc chạy nền (waitUntil) giữa chừng
+      // -> AI không kịp trả lời. Chống trùng đã có p_mid nên await an toàn.
+      try {
+        const token = await zaloToken();
+        if (kq?.thieu_ten) await layTenZalo(uid, token);
+        if (kq?.ai_se_tra_loi) await aiTraLoi(kq.ht_id, uid, token);
+      } catch (e) { console.error('xu ly tin:', e?.message); }
     }
     return Response.json({ ok: true });
   } catch (e) {

@@ -1,4 +1,4 @@
-// zalooa v5.6 (15/09) - ghim vung iad1 (fix Anthropic 403 Request not allowed) + che do kiemtra
+// zalooa v5.9 (15/09) - cham song song 4 ca + ngan sach 10s + tu duyet (auto 100%)
 // NS CARE — BỘ HỌC TẬP: chuyên gia AI chấm hội thoại thật, rút bài học.
 // Gọi bởi Vercel Cron (ban đêm) hoặc nút "Học ngay" trên app.
 // GHIM vùng Mỹ: Anthropic chặn một số khu vực châu Á -> 403 Request not allowed
@@ -54,12 +54,16 @@ CHUẨN ĐÁNH GIÁ - "LẼ PHẢI" (theo thứ tự quan trọng):
 3. TỬ TẾ VÀ TÔN TRỌNG: không thao túng, không ép mua, không nói xấu đối thủ, không khơi vào mặc cảm của khách.
 4. HIỆU QUẢ BÁN HÀNG: gợi đúng nhu cầu, xử lý được băn khoăn, dẫn dắt tới quyết định một cách tinh tế.
 
-RẤT QUAN TRỌNG:
-- Chấm CÁCH XỬ LÝ và NỘI DUNG, TUYỆT ĐỐI KHÔNG chấm văn phong/câu chữ (văn phong đã có quy tắc riêng).
-- Bài học phải TỔNG QUÁT HOÁ để dùng được cho ca khác: KHÔNG nhắc tên khách, KHÔNG nhắc mã sản phẩm cụ thể.
-- Bài học tối đa 2 câu, bắt đầu bằng "NÊN:" hoặc "TRÁNH:".
-- Nếu là ca THẤT BẠI thì BẮT BUỘC chỉ rõ sai ở đâu và viết lại câu trả lời mẫu chuẩn mực.
-- Nếu hội thoại vô nghĩa (spam, chỉ chào hỏi, sticker, không có nội dung tư vấn) thì đặt "dang_hoc": false và bỏ trống các trường phân tích.
+RẤT QUAN TRỌNG - ĐÂY LÀ NGUYÊN TẮC BẤT DI BẤT DỊCH:
+1. HỌC ĐIỀU ĐÚNG ĐẮN, KHÔNG HỌC VĂN PHONG. Bài học phải là NGUYÊN TẮC XỬ LÝ ĐÚNG (làm gì, theo trình tự nào, xác nhận điều gì trước khi cam kết), TUYỆT ĐỐI KHÔNG phải cách dùng từ hay giọng điệu.
+2. TUYỆT ĐỐI KHÔNG học theo câu chữ của nhân viên trong hội thoại - nhân viên có thể viết cẩu thả, sai chính tả, thiếu chuyên nghiệp. Bạn CHỈ rút ra điều đúng về mặt NGHIỆP VỤ và ĐẠO LÝ.
+3. Xác định ĐÚNG/SAI dựa trên SỰ THẬT và KẾT QUẢ THỰC TẾ: điều gì dẫn tới khách hài lòng và mua hàng thì là đúng; điều gì làm khách mất niềm tin, bỏ đi, hoặc khiến Nón Sơn hứa sai thì là sai. Không phán theo cảm tính.
+4. "cau_tra_loi_mau" PHẢI viết bằng VĂN PHONG CHUYÊN NGHIỆP CHUẨN MỰC của Nón Sơn theo QUY TẮC ở trên (xưng "em", gọi "anh/chị", lịch sự, ấm áp, không markdown, không gạch dài, không từ tiêu cực). Đây là câu mẫu để nhân viên noi theo nên phải hoàn hảo.
+5. Bài học TỔNG QUÁT HOÁ: KHÔNG nhắc tên khách, KHÔNG nhắc mã sản phẩm cụ thể, KHÔNG nhắc số tin.
+6. Bài học TỐI ĐA 2 CÂU, CHỈ MỘT loại: hoặc bắt đầu "NÊN:" hoặc bắt đầu "TRÁNH:" - KHÔNG gộp cả hai vào một bài.
+7. Ca THẤT BẠI BẮT BUỘC có "loi_sai" chỉ rõ sai ở đâu + "cau_tra_loi_mau" viết lại chuẩn mực.
+8. Nếu hội thoại vô nghĩa (spam, chỉ chào hỏi, sticker, không có nội dung tư vấn) thì đặt "dang_hoc": false và bỏ trống các trường phân tích.
+9. "chu_de" CHỈ được chọn đúng một trong các giá trị cho sẵn, không tự đặt giá trị khác.
 
 TÍN HIỆU HỆ THỐNG TỰ ĐOÁN (tham khảo, bạn tự quyết định cuối cùng):
 ${tinHieu}
@@ -147,7 +151,8 @@ export default async function handler(req) {
       loi: r.ok ? null : JSON.stringify(j?.error || j).slice(0, 400) });
   }
 
-  let lo = null, soCham = 0, soBai = 0, loi = null, soUngVien = 0;
+  const t0 = Date.now();
+  let lo = null, soCham = 0, soBai = 0, loi = null, soUngVien = 0, hetGio = false;
   try {
     const mo = await rpc('fn_hoc_lo_mo', { p_nguon: nguon });
     if (!mo?.chay) return json({ ok: true, chay: false, ly_do: mo?.ly_do });
@@ -166,18 +171,38 @@ export default async function handler(req) {
 
     const ds = await rpc('fn_hoc_ung_vien', { p_gh: mo.so_ht || 6 });
     soUngVien = Array.isArray(ds) ? ds.length : 0;
-    for (const ht of (Array.isArray(ds) ? ds : [])) {
+
+    // Chấm SONG SONG theo nhóm để nhanh; ngân sách 10s (Vercel cắt ~25s)
+    const dsArr = Array.isArray(ds) ? ds : [];
+    const SONG_SONG = 4;
+    for (let i = 0; i < dsArr.length; i += SONG_SONG) {
+      if (Date.now() - t0 > 10000) { hetGio = true; break; }
+      await Promise.all(dsArr.slice(i, i + SONG_SONG).map(ht => chamMotCaAnToan(ht, quyTac, mo)));
+    }
+  } catch (e) {
+    loi = (loi ? loi + ' | ' : '') + (e?.message || 'loi_khong_ro');
+    console.error('hoc-runner:', e?.message);
+  }
+
+  // ---- hàm chấm 1 ca có bắt lỗi, dùng trong Promise.all ----
+  async function chamMotCaAnToan(ht, quyTac, mo) {
       try {
         const kq = await chamMotCa(ht, quyTac, mo.model);
         soCham++;
-        if (kq.dang_hoc === false) continue;           // ca vô nghĩa → bỏ, không lưu
+        if (kq.dang_hoc === false) return;             // ca vô nghĩa -> bỏ, không lưu
+        const CHU_DE_OK = ['hoi_gia','chot_don','che_dat','gui_anh','doi_tra','khieu_nai','hoi_size','khach_im','khac'];
+        const chuDe = CHU_DE_OK.includes(String(kq.chu_de || '')) ? kq.chu_de : 'khac';
+        const loaiBH = (kq.loai_bai_hoc === 'nen' || kq.loai_bai_hoc === 'tranh')
+          ? kq.loai_bai_hoc : (kq.ket_qua === 'that_bai' ? 'tranh' : 'nen');
+        const baiHoc = String(kq.bai_hoc || '').trim().slice(0, 400);
+        if (!baiHoc) return;                          // không rút được bài học thì bỏ
         await rpc('fn_hoc_ghi', { p_data: {
           hoi_thoai_id: ht.ht_id, kenh: ht.kenh, den_luc: ht.den_luc, so_tin: ht.so_tin,
           ket_qua: kq.ket_qua, ly_do_ket_qua: kq.ly_do_ket_qua,
-          diem: kq.diem, tom_tat: kq.tom_tat, chu_de: kq.chu_de,
+          diem: kq.diem, tom_tat: kq.tom_tat, chu_de: chuDe,
           nuoc_di_hay: kq.nuoc_di_hay, loi_sai: kq.loi_sai,
-          cau_tra_loi_mau: kq.cau_tra_loi_mau, bai_hoc: kq.bai_hoc,
-          loai_bai_hoc: kq.loai_bai_hoc || (kq.ket_qua === 'that_bai' ? 'tranh' : 'nen'),
+          cau_tra_loi_mau: kq.cau_tra_loi_mau, bai_hoc: baiHoc,
+          loai_bai_hoc: loaiBH,
           dan_chung: Array.isArray(kq.dan_chung) ? kq.dan_chung : [],
           model: mo.model
         } });
@@ -186,10 +211,6 @@ export default async function handler(req) {
         console.error('cham ca', ht.ht_id, e?.message);
         loi = (loi ? loi + ' | ' : '') + `HT${ht.ht_id}: ${e?.message}`.slice(0, 160);
       }
-    }
-  } catch (e) {
-    loi = (loi ? loi + ' | ' : '') + (e?.message || 'loi_khong_ro');
-    console.error('hoc-runner:', e?.message);
   }
 
   let conLai = 0;
@@ -198,5 +219,6 @@ export default async function handler(req) {
     conLai = await rpc('fn_hoc_con_lai', {});
   } catch (_) {}
 
-  return json({ ok: !loi, so_cham: soCham, so_bai_moi: soBai, ung_vien: soUngVien, con_lai: conLai, loi });
+  return json({ ok: !loi, so_cham: soCham, so_bai_moi: soBai, ung_vien: soUngVien,
+    con_lai: conLai, het_gio: hetGio, vung: process.env.VERCEL_REGION || '?', loi });
 }

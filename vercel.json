@@ -27,6 +27,22 @@
     {
       "source": "/hoc-runner",
       "destination": "/api/hoc-runner"
+    },
+    {
+      "source": "/hoc-chungcat",
+      "destination": "/api/hoc-chungcat"
+    },
+    {
+      "source": "/tiktok-oauth",
+      "destination": "/api/tiktok-oauth"
+    },
+    {
+      "source": "/tiktok-webhook",
+      "destination": "/api/tiktok-webhook"
+    },
+    {
+      "source": "/tiktok-shop",
+      "destination": "/api/tiktok-shop"
     }
   ]
 }
