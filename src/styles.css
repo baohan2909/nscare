@@ -1056,3 +1056,5 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .hoc-tuychon input{width:15px;height:15px;accent-color:var(--teal);cursor:pointer}
 .hoc-xuat-tt{background:#EAF6F4;border:1px solid #D7E9E6;border-radius:10px;padding:9px 13px;
   font-size:12.5px;font-weight:600;color:var(--teal-deep)}
+/* Chip kênh TikTok — dùng màu thương hiệu TikTok (đen + hồng #FE2C55) */
+.kenh-chip.tt{background:rgba(254,44,85,.09);color:#121212;border:1px solid rgba(254,44,85,.3)}

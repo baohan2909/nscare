@@ -27,6 +27,12 @@ function ting() {
   } catch (e) { /* im lặng */ }
 }
 
+// Tên và màu chip theo kênh (Zalo / Facebook / TikTok)
+const KENH_TEN = { zalo: 'Zalo', facebook: 'Facebook',
+  tiktok_shop: 'TikTok Shop', tiktok_dm: 'TikTok', tiktok_cmt: 'TikTok' }
+const kenhTen = k => KENH_TEN[k] || 'Zalo'
+const kenhLop = k => k === 'facebook' ? 'fb' : (String(k || '').startsWith('tiktok') ? 'tt' : 'za')
+
 export default function HopChat() {
   const { user, laQuyen } = useAuth()
   const [loc, setLoc] = useState(() => 'toi')
@@ -309,6 +315,7 @@ export default function HopChat() {
             <option value="">Mọi kênh</option>
             <option value="zalo">Zalo</option>
             <option value="facebook">Facebook</option>
+            <option value="tiktok_shop">TikTok Shop</option>
           </select>
         </div>
         {theDs.length > 0 &&
@@ -349,7 +356,7 @@ export default function HopChat() {
                 </div>
                 <div className="cdi-r">
                   <div className="cdi-gio">{h.tin_cuoi_luc ? gioVN(h.tin_cuoi_luc).slice(6) : ''}</div>
-                  <span className={'kenh-chip ' + (h.kenh === 'facebook' ? 'fb' : 'za')}>{h.kenh === 'facebook' ? 'Facebook' : 'Zalo'}</span>
+                  <span className={'kenh-chip ' + kenhLop(h.kenh)}>{kenhTen(h.kenh)}</span>
                 </div>
               </div>
             ))}
@@ -366,7 +373,7 @@ export default function HopChat() {
               : <div className="cmd-av">{tenKH(chon).replace('Khách #', 'K').slice(0, 1).toUpperCase()}</div>}
             <div className="cmd-info">
               <b className="cmd-ten"><span className="cmd-ten-tx">{tenKH(chon)}</span>
-                <span className={'kenh-chip lon ' + (chon.kenh === 'facebook' ? 'fb' : 'za')}>{chon.kenh === 'facebook' ? 'Facebook' : 'Zalo'}</span></b>
+                <span className={'kenh-chip lon ' + kenhLop(chon.kenh)}>{kenhTen(chon.kenh)}</span></b>
               <span className="cmd-sub">
                 {chon.sdt ? fmtSdt(chon.sdt) + ' · ' : 'Chưa gắn SĐT · '}
                 {TT[chon.trang_thai] || chon.trang_thai}
@@ -391,7 +398,7 @@ export default function HopChat() {
                     <button onClick={() => { toggleUuTien(); setMenuMore(false) }}><span className={chon.uu_tien ? 'sao on' : 'sao'}>★</span> {chon.uu_tien ? 'Bỏ ưu tiên' : 'Đánh dấu ưu tiên'}</button>
                     <button onClick={() => { setPanelThe(v => !v); setMenuMore(false) }}>🏷 Gắn thẻ</button>
                     <button onClick={() => { setSuaKh({ ten: chon.ten || '', sdt: chon.sdt || '', dang: false }); setMenuMore(false) }}><IcPen size={13} /> Sửa tên / SĐT</button>
-                    <button onClick={() => { layTen(chon.id, false); setMenuMore(false) }}>↻ Lấy lại tên từ {chon.kenh === 'facebook' ? 'Facebook' : 'Zalo'}</button>
+                    <button onClick={() => { layTen(chon.id, false); setMenuMore(false) }}>↻ Lấy lại tên từ {kenhTen(chon.kenh)}</button>
                     {chon.sdt && <button onClick={() => { moHoSo(); setMenuMore(false) }}><IcUser size={13} /> Hồ sơ khách 360°</button>}
                     <div className="cmd-more-tt">
                       <span>Trạng thái</span>
@@ -517,7 +524,11 @@ export default function HopChat() {
 
           {/* ══ COMPOSER ══ */}
           <div className="composer">
-            {!canGui && <div className="cn-canh">{chon.kenh === 'facebook' ? 'Ngoài cửa sổ 24h — Facebook chỉ cho gửi khi khách nhắn lại' : 'Ngoài cửa sổ 48h — Zalo chỉ cho gửi khi khách nhắn lại'}</div>}
+            {!canGui && <div className="cn-canh">{String(chon.kenh || '').startsWith('tiktok')
+                ? 'Ngoài cửa sổ 24h - TikTok chỉ cho gửi khi khách nhắn lại'
+                : chon.kenh === 'facebook'
+                  ? 'Ngoài cửa sổ 24h - Facebook chỉ cho gửi khi khách nhắn lại'
+                  : 'Ngoài cửa sổ 48h - Zalo chỉ cho gửi khi khách nhắn lại'}</div>}
             <div className="composer-khung">
               <textarea ref={taRef} rows={1} className="composer-ta"
                 placeholder={canGui ? 'Nhập tin nhắn cho khách… (Enter gửi · Shift+Enter xuống dòng)' : 'Chờ khách nhắn lại (hết cửa sổ gửi)'}
