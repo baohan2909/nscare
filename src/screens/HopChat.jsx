@@ -33,6 +33,16 @@ const KENH_TEN = { zalo: 'Zalo', facebook: 'Facebook',
 const kenhTen = k => KENH_TEN[k] || 'Zalo'
 const kenhLop = k => k === 'facebook' ? 'fb' : (String(k || '').startsWith('tiktok') ? 'tt' : 'za')
 
+// Không để bong bóng trống: tin không chữ thì hiện nhãn mô tả
+function coalesceNoiDung(t) {
+  const txt = (t.noi_dung || '').trim()
+  if (txt) return txt
+  if (t.anh_url) return ''                       // đã có ảnh, khỏi thêm chữ
+  if (t.loai === 'image') return '[Hình ảnh không tải được]'
+  if (t.loai === 'sticker') return '[Sticker]'
+  return '[Tin không có nội dung]'
+}
+
 export default function HopChat() {
   const { user, laQuyen } = useAuth()
   const [loc, setLoc] = useState(() => 'toi')
@@ -444,8 +454,22 @@ export default function HopChat() {
                       <div className={'ct-bong' + (laAI ? ' ai' : '') + (t.trang_thai === 'loi' ? ' loi' : '')}>
                         {t.trang_thai === 'loi' && <span className="ct-loi-tag">CHƯA GỬI ĐƯỢC{t.ma_loi ? ' · ' + t.ma_loi : ''}</span>}
                         {laAI && <span className="ct-ai-tag"><IcSpark size={11} /> NS AI</span>}
-                        {t.anh_url ? <a href={t.anh_url} target="_blank" rel="noreferrer"><img className="ct-anh" src={t.anh_url} alt="" /></a> : null}
-                        {t.noi_dung}
+                        {t.anh_url ? (
+                          <a href={t.anh_url} target="_blank" rel="noreferrer">
+                            <img className="ct-anh" src={t.anh_url} alt=""
+                              onError={e => {                       // ảnh hết hạn -> hiện nhãn thay vì ô trắng
+                                e.currentTarget.style.display = 'none';
+                                const b = e.currentTarget.parentElement?.parentElement;
+                                if (b && !b.querySelector('.ct-anh-hong')) {
+                                  const n = document.createElement('div');
+                                  n.className = 'ct-anh-hong';
+                                  n.textContent = 'Ảnh đã hết hạn — bấm để mở link gốc';
+                                  e.currentTarget.parentElement.appendChild(n);
+                                }
+                              }} />
+                          </a>
+                        ) : null}
+                        {coalesceNoiDung(t)}
                         <div className="ct-meta">{gioVN(t.tao_luc).slice(0, 5)}
                           {t.chieu === 'di' && t.nguoi_gui === 'OA' ? ' · từ Zalo OA'
                             : t.chieu === 'di' && t.nguoi_gui === 'FB' ? ' · từ Fanpage'

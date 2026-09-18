@@ -1063,3 +1063,6 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .ct-bong.loi .ct-anh{opacity:.55;filter:grayscale(.35)}
 .ct-loi-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;
   letter-spacing:.3px;color:#fff;background:#B3403F;padding:2px 8px;border-radius:10px;margin-bottom:5px}
+/* Ảnh hết hạn — thay ô trắng bằng nhãn rõ ràng */
+.ct-anh-hong{display:inline-block;padding:9px 12px;border:1px dashed #C9D4D3;border-radius:9px;
+  background:#F7F5F1;color:var(--ink-2);font-size:12px;font-style:italic;margin-bottom:4px}
