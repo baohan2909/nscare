@@ -1058,3 +1058,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
   font-size:12.5px;font-weight:600;color:var(--teal-deep)}
 /* Chip kênh TikTok — dùng màu thương hiệu TikTok (đen + hồng #FE2C55) */
 .kenh-chip.tt{background:rgba(254,44,85,.09);color:#121212;border:1px solid rgba(254,44,85,.3)}
+/* Tin gửi hỏng — phải thấy ngay, đừng để nhầm là đã gửi */
+.ct-bong.loi{border:1.5px solid #E07A76;background:#FDF2F2}
+.ct-bong.loi .ct-anh{opacity:.55;filter:grayscale(.35)}
+.ct-loi-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;
+  letter-spacing:.3px;color:#fff;background:#B3403F;padding:2px 8px;border-radius:10px;margin-bottom:5px}

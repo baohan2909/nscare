@@ -441,7 +441,8 @@ export default function HopChat() {
                       {t.chieu === 'den' && (dauCum
                         ? (chon.avatar_url ? <img className="ct-av" src={chon.avatar_url} alt="" /> : <span className="ct-av chu">{tenKH(chon).replace('Khách #', 'K').slice(0, 1)}</span>)
                         : <span className="ct-av-spacer" />)}
-                      <div className={'ct-bong' + (laAI ? ' ai' : '')}>
+                      <div className={'ct-bong' + (laAI ? ' ai' : '') + (t.trang_thai === 'loi' ? ' loi' : '')}>
+                        {t.trang_thai === 'loi' && <span className="ct-loi-tag">CHƯA GỬI ĐƯỢC{t.ma_loi ? ' · ' + t.ma_loi : ''}</span>}
                         {laAI && <span className="ct-ai-tag"><IcSpark size={11} /> NS AI</span>}
                         {t.anh_url ? <a href={t.anh_url} target="_blank" rel="noreferrer"><img className="ct-anh" src={t.anh_url} alt="" /></a> : null}
                         {t.noi_dung}
