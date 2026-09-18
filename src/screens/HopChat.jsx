@@ -447,12 +447,15 @@ export default function HopChat() {
                         {t.anh_url ? <a href={t.anh_url} target="_blank" rel="noreferrer"><img className="ct-anh" src={t.anh_url} alt="" /></a> : null}
                         {t.noi_dung}
                         <div className="ct-meta">{gioVN(t.tao_luc).slice(0, 5)}
-                          {t.chieu === 'di' && t.nguoi_gui === 'OA' ? ' · từ Zalo OA' : t.chieu === 'di' && t.nguoi_gui === 'FB' ? ' · từ Fanpage' : t.chieu === 'di' && !laAI && t.nguoi_gui ? ' · ' + t.nguoi_gui : ''}
+                          {t.chieu === 'di' && t.nguoi_gui === 'OA' ? ' · từ Zalo OA'
+                            : t.chieu === 'di' && t.nguoi_gui === 'FB' ? ' · từ Fanpage'
+                            : t.chieu === 'di' && t.nguoi_gui === 'TT' ? ' · từ app TikTok'
+                            : t.chieu === 'di' && !laAI && t.nguoi_gui ? ' · ' + t.nguoi_gui : ''}
                           {t.trang_thai === 'dang' ? ' · đang gửi…' : t.trang_thai === 'loi' ? ' · ⚠ lỗi' : ''}</div>
                       </div>
                       {t.chieu === 'di' && (dauCum
                         ? (laAI ? <span className="ct-av ai" title="NS AI"><IcSpark size={15} /></span>
-                            : <span className="ct-av nv" title={t.nguoi_gui || 'Nhân viên'}>{(t.nguoi_gui === 'OA' ? 'OA' : (t.nguoi_gui || 'NV')).slice(0, 2).toUpperCase()}</span>)
+                            : <span className="ct-av nv" title={t.nguoi_gui || 'Nhân viên'}>{(t.nguoi_gui === 'OA' ? 'OA' : t.nguoi_gui === 'TT' ? 'TT' : (t.nguoi_gui || 'NV')).slice(0, 2).toUpperCase()}</span>)
                         : <span className="ct-av-spacer" />)}
                     </div>
                   </div>
